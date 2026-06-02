@@ -1,0 +1,222 @@
+# Allure Test Agent
+
+Use Allure agent mode to design, review, validate, debug, and enrich tests in this project.
+
+This file is project-specific guidance. Durable test-design, expectation, and evidence rules live in the `allure-test-agent` skill. If the skill is available, use it together with this file. If the skill is unavailable, follow this file as the local fallback and keep conclusions conservative.
+
+## Review Principle
+
+Runtime first, source second.
+
+- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through the local agent test service when available, or through `allure agent` otherwise.
+- Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
+- Only skip agent mode when it is impossible or when debugging agent mode itself.
+- If agent-mode output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
+
+## Local Capability Snapshot
+
+Refresh this section when Allure, test runners, CI, or project wrappers change. Confirm local support with the project wrapper, `allure --version`, and `allure agent --help` before using optional commands.
+
+Do not store the exact Allure version here. Version output is a runtime fact; this file should store the wrapper, last snapshot marker, and how to refresh capabilities.
+
+- Allure wrapper: `<fill during setup, e.g. yarn allure, npx allure, pnpm allure, ./gradlew allure>`
+- Capability snapshot last checked: `<fill date, commit, or unknown>`
+- Refresh capabilities with: `<wrapper> --version` and `<wrapper> agent --help`
+- Agent execution: `<supported / unsupported / unknown>`
+- Output option: `<fill supported syntax or unknown>`
+- Expectation controls: `<fill supported options, command goal controls, file format, or unknown>`
+- Latest/state directory recovery: `<supported / unsupported / unknown>`
+- Selection/rerun support: `<supported / unsupported / unknown>`
+- Discovery/configuration commands: `<supported / unsupported / unknown>`
+- Local agent test service: `<start command, endpoint, unsupported, or unknown>`
+
+## Local Agent Test Service
+
+Use the local agent test service when the project provides one and the task is query-heavy, stateful, or iterative. Use `allure agent` directly when service mode is unavailable or unnecessary.
+
+- Service status: `<supported / unsupported / unknown>`
+- Start or connect command: `<fill when project-approved, otherwise unknown>`
+- Capability/status endpoint: `<fill or unknown>`
+- Supported intents: `<run one test/file/label/profile/rerun/query/unknown>`
+- Supported profiles and selectors: `<fill or unknown>`
+- Query support: `<runs/tests/findings/events/attachments/evidence/unknown>`
+- Realtime and cancellation support: `<supported / unsupported / unknown>`
+- Service logs or diagnostics: `<path or unknown>`
+- Fallback when unavailable: `<wrapper> agent -- <command>` or `<fill local fallback>`
+
+## Local Test Surfaces
+
+- Test frameworks and runners: `<fill during setup>`
+- Test roots: `<fill during setup>`
+- Allure result paths: `<fill during setup>`
+- Known selector support: `<file/test name/label/package/suite/test plan/unknown>`
+- Known environments or services needed for tests: `<fill during setup>`
+
+## Allure Integrations
+
+Document only integrations detected or explicitly configured in this project.
+
+- Existing Allure adapters/integrations: `<fill or unknown>`
+- Runner config files: `<fill or unknown>`
+- Allure results directories: `<fill or unknown>`
+- Supported integration configuration targets: `<specified integration / all discovered / none / unknown>`
+- Validation command for integration setup: `<focused smoke, discovery only, or unknown>`
+- Known unsupported or skipped integrations: `<fill with reasons or unknown>`
+- Integration-specific quirks: `<result cleanup, reporter config, env vars, attachments, or unknown>`
+
+## Project Test-Design Conventions
+
+Fill only conventions that exist in this project. Durable test-design rules stay in the `allure-test-agent` skill.
+
+- Accepted test layers: `<unit/component/integration/API/browser/CLI/etc. or unknown>`
+- Preferred assertion style: `<framework matchers, custom assertions, deep-match messages, or unknown>`
+- Parameterized test style: `<case naming, parameter reporting, limits, or unknown>`
+- Smoke coverage conventions: `<higher-layer smoke expectations or unknown>`
+- Mocking and integration-test preference: `<project rule or unknown>`
+- Suppression/quarantine policy: `<owner/reason/issue/expiry/restore path or unknown>`
+
+## Run Profiles
+
+Document only profiles that exist in this project. If a profile is inferred rather than confirmed, mark it as inferred.
+
+| Profile | Command or service intent | Expected use | Confidence limits |
+| --- | --- | --- | --- |
+| smoke | `<fill>` | Quick signal for critical paths | Does not prove full coverage |
+| affected | `<fill>` | Changes mapped to likely tests | Mapping may miss indirect impact |
+| feature/component | `<fill>` | Focused validation for one area | Depends on local labels/selectors |
+| full | `<fill>` | Broad validation | Cost may be high |
+
+## Execution Signal And CI Trust
+
+Do not present ignored, excluded, swallowed, advisory, or non-gating test execution as proof that behavior is safe.
+
+- Default local test command: `<fill or unknown>`
+- Default local command exclusions: `<fill or unknown>`
+- CI test jobs: `<fill names or unknown>`
+- CI gating status: `<gating / non-gating / allowed failure / advisory / unknown>`
+- Known ignored, skipped, muted, quarantined, or disabled tests: `<fill policy, owner, issue, restore path, or unknown>`
+- Test artifacts retained by CI: `<Allure output, logs, traces, none, or unknown>`
+
+If CI or local execution is non-gating, excludes important tests, or swallows failures, call that out before using the run as proof.
+
+## Local Expectation Controls
+
+Before each run, create fresh expectations using the mechanism supported by local `allure agent --help`.
+
+- Supported expectation mechanism: `<CLI options / command goal controls / file / unsupported / unknown>`
+- Exact test/file/suite/label/profile support: `<fill or unknown>`
+- Excluded-scope controls: `<supported / unsupported / unknown>`
+- Evidence/check expectation controls: `<supported / unsupported / unknown>`
+- Broad-audit fallback: `<fill local convention or unknown>`
+
+Expectations should state:
+
+- what should run
+- what should not run
+- which profile, environment, variant, or parameter set is intended
+- what important checks or evidence should be visible
+- why this scope is enough
+- what the run cannot prove
+
+If local expectation support is unavailable or weak, run the narrowest practical command, review observed scope from manifests, and state that expectation checking was limited.
+
+## Core Loops
+
+### Test Review Loop
+
+1. Identify the exact review scope and validation depth.
+2. Create fresh meaningful expectations using local supported controls.
+3. Run only that scope through the local agent test service or `allure agent`.
+4. Print the run's `index.md` path.
+5. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown.
+6. Inspect source code only after runtime evidence explains what executed.
+7. Call out weak scope, weak evidence, execution-signal limits, or partial runtime modeling.
+
+### Test Authoring Loop
+
+1. Understand the feature, issue, expected behavior, and risk.
+2. Read the `allure-test-agent` skill's test-design guidance when available.
+3. Create fresh meaningful expectations for the intended scope.
+4. Write or update focused tests without weakening useful coverage.
+5. Run the intended scope through agent mode.
+6. Review scope, checks, evidence, and execution signal before claiming validation.
+7. Enrich tests when evidence is weak, then rerun with fresh temp output.
+
+### Evidence And Metadata Enrichment Loop
+
+Use this when tests pass but are hard to review:
+
+1. Identify weak evidence, missing checks, missing setup state, missing artifacts, or noisy metadata.
+2. Prefer framework integrations and helper-boundary instrumentation over wrapping every line.
+3. Add useful steps, attachments, parameters, descriptions, labels, or links using project conventions.
+4. Redact sensitive values while preserving useful artifact shape.
+5. Rerun the same intended scope and report evidence changes.
+
+### Coverage Review Loop
+
+1. Split broad audits into scoped groups when practical.
+2. Give each group meaningful expectations and a unique temp output directory.
+3. Run each group through agent mode.
+4. Separate observed runtime coverage from inferred source-code coverage.
+5. Mark review incomplete until every scoped group matched expectations or was documented as a broad package-health audit.
+
+## Runtime Artifact Review
+
+After each agent-mode run:
+
+- print the run's `index.md` path
+- read `manifest/run.json`
+- read `manifest/test-events.jsonl`
+- read `manifest/tests.jsonl`
+- read `manifest/findings.jsonl`
+- read relevant per-test markdown before inspecting source
+- inspect global stderr/log artifacts when runner-visible failures are not represented as logical tests
+
+## Output, State, And Reruns
+
+Do not create persistent output or expectation paths. Use unique temp paths for every run.
+
+- Agent output policy: `<unique temp dir / project convention / unknown>`
+- Latest output recovery: `<supported command or unknown>`
+- State directory override: `<supported env var or unknown>`
+- Rerun from latest/prior output: `<supported command or unknown>`
+- Selection/test plan support: `<supported command/path or unknown>`
+- Parallel-run rule: output paths and expectation state must not be shared
+- CI artifact retention: `<agent output, logs, traces, none, or unknown>`
+
+## Project Metadata Conventions
+
+Fill only conventions that exist in this project.
+
+- Feature/story/component/service labels: `<fill or unknown>`
+- Owner/team metadata: `<fill or unknown>`
+- Severity or priority metadata: `<fill or unknown>`
+- Issue, bug, requirement, or known-defect links: `<fill or unknown>`
+- Suite/package/module taxonomy: `<fill or unknown>`
+- Parameter naming and dynamic-history exclusions: `<fill or unknown>`
+- Metadata to avoid: `<decorative labels, unused taxonomy, or unknown>`
+
+## Project Evidence Conventions
+
+Fill only conventions that exist in this project.
+
+- Test descriptions: `<expected style or unknown>`
+- Attachments: `<HTTP exchange/image diff/Playwright trace/logs/SQL/fixture conventions or unknown>`
+- Step naming: `<project style or unknown>`
+- Assertion/check visibility: `<integration support or unknown>`
+- Fixture/setup evidence: `<file tree/database rows/config/logs or unknown>`
+- Sensitive data redaction: `<project policy or unknown>`
+
+## Acceptance Rules
+
+Accept a run only when:
+
+- observed scope matches the intended scope, or drift is explained
+- coverage remains meaningful for the stated conclusion
+- important checks are visible
+- evidence is strong enough to explain what happened
+- execution-signal limits are explicit
+- no high-confidence placeholder or noop evidence findings remain
+- partial runtime modeling is called out
+
+Console-only conclusions are provisional when agent output is absent or incomplete.

@@ -10,8 +10,8 @@ It is the lightweight install source for Allure-specific agent workflows. Keepin
 
 | Skill | Purpose |
 | --- | --- |
-| `allure-agent-mode-setup` | Set up project guidance for Allure agent-mode test workflows. |
-| `allure-agent-mode-feature-delivery` | Use Allure agent-mode while designing, validating, reviewing, and enriching tests. |
+| `allure-test-agent-setup` | Add Allure test-agent guidance to a project. |
+| `allure-test-agent` | Write, review, debug, and improve tests with Allure evidence. |
 
 ## Installation
 
@@ -20,21 +20,21 @@ Use `$skill-installer` in Codex to install one or more skills from this reposito
 Install the project setup skill:
 
 ```text
-Use $skill-installer to install https://github.com/allure-framework/skills/tree/main/skills/allure-agent-mode-setup
+Use $skill-installer to install https://github.com/allure-framework/skills/tree/main/skills/allure-test-agent-setup
 ```
 
-Install the feature delivery skill:
+Install the test agent skill:
 
 ```text
-Use $skill-installer to install https://github.com/allure-framework/skills/tree/main/skills/allure-agent-mode-feature-delivery
+Use $skill-installer to install https://github.com/allure-framework/skills/tree/main/skills/allure-test-agent
 ```
 
 Install both skills:
 
 ```text
 Use $skill-installer to install these skills from allure-framework/skills:
-- skills/allure-agent-mode-setup
-- skills/allure-agent-mode-feature-delivery
+- skills/allure-test-agent-setup
+- skills/allure-test-agent
 ```
 
 Restart Codex after installation so the new skills are discovered.
