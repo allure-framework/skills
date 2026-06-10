@@ -101,31 +101,37 @@ If CI or local execution is non-gating, excludes important tests, or swallows fa
 
 ## Local Expectation Controls
 
-Before each run, create fresh expectations using the mechanism supported by local `allure agent --help`.
+Before each validation run, decide whether expectations reduce a real risk for the intended conclusion. When they do, use the smallest fresh inline options supported by local `allure agent --help`.
 
-- Supported expectation mechanism: `<CLI options / command goal controls / file / unsupported / unknown>`
+- Supported expectation mechanism: `<inline CLI options / command goal controls / advanced file mode / unsupported / unknown>`
 - Exact test/file/suite/label/profile support: `<fill or unknown>`
 - Excluded-scope controls: `<supported / unsupported / unknown>`
-- Evidence/check expectation controls: `<supported / unsupported / unknown>`
+- Evidence expectation controls: `<supported / unsupported / unknown>`
+- Check/assertion step-name controls: `<supported / unsupported / unknown; fill useful substrings or naming convention>`
 - Broad-audit fallback: `<fill local convention or unknown>`
 
-Expectations should state:
+Prefer inline options. Use `--expectations <file>` only as advanced mode when the contract is too large, generated, or policy-controlled.
 
+When expectations are justified, they should state only the parts that matter for this run:
+
+- what claim or validation depth the run is meant to support
 - what should run
 - what should not run
 - which profile, environment, variant, or parameter set is intended
-- what important checks or evidence should be visible
+- what important checks or evidence should be visible through supported reporting or documented step-name conventions
 - why this scope is enough
 - what the run cannot prove
 
 If local expectation support is unavailable or weak, run the narrowest practical command, review observed scope from manifests, and state that expectation checking was limited.
+
+Treat the run goal as a claim boundary for review, not as proof. If the goal is wrong or stale, keep the runtime evidence and report what the observed run actually supports.
 
 ## Core Loops
 
 ### Test Review Loop
 
 1. Identify the exact review scope and validation depth.
-2. Create fresh meaningful expectations using local supported controls.
+2. Create the smallest meaningful expectations using local supported controls when they protect the review conclusion.
 3. Run only that scope through the local agent test service or `allure agent`.
 4. Print the run's `index.md` path.
 5. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown.
@@ -136,7 +142,7 @@ If local expectation support is unavailable or weak, run the narrowest practical
 
 1. Understand the feature, issue, expected behavior, and risk.
 2. Read the `allure-test-agent` skill's test-design guidance when available.
-3. Create fresh meaningful expectations for the intended scope.
+3. Create the smallest meaningful expectations for the intended scope when they reduce a real validation risk.
 4. Write or update focused tests without weakening useful coverage.
 5. Run the intended scope through agent mode.
 6. Review scope, checks, evidence, and execution signal before claiming validation.
@@ -155,10 +161,10 @@ Use this when tests pass but are hard to review:
 ### Coverage Review Loop
 
 1. Split broad audits into scoped groups when practical.
-2. Give each group meaningful expectations and a unique temp output directory.
+2. Give each group a unique temp output directory and use expectations only when the group has a known scope or supports a validation conclusion.
 3. Run each group through agent mode.
 4. Separate observed runtime coverage from inferred source-code coverage.
-5. Mark review incomplete until every scoped group matched expectations or was documented as a broad package-health audit.
+5. Mark review incomplete until every scoped group was validated through matched expectations, reviewed observed scope, or documented as a broad package-health audit.
 
 ## Runtime Artifact Review
 
@@ -203,7 +209,8 @@ Fill only conventions that exist in this project.
 - Test descriptions: `<expected style or unknown>`
 - Attachments: `<HTTP exchange/image diff/Playwright trace/logs/SQL/fixture conventions or unknown>`
 - Step naming: `<project style or unknown>`
-- Assertion/check visibility: `<integration support or unknown>`
+- Check/assertion step naming: `<e.g. "expect <actual> to <matcher>", "validate <contract>", or unknown>`
+- Assertion/check visibility: `<integration support, documented step-name convention, or unknown>`
 - Fixture/setup evidence: `<file tree/database rows/config/logs or unknown>`
 - Sensitive data redaction: `<project policy or unknown>`
 
@@ -213,7 +220,7 @@ Accept a run only when:
 
 - observed scope matches the intended scope, or drift is explained
 - coverage remains meaningful for the stated conclusion
-- important checks are visible
+- important checks are visible through supported reporting, documented step-name conventions, or source review covers the gap
 - evidence is strong enough to explain what happened
 - execution-signal limits are explicit
 - no high-confidence placeholder or noop evidence findings remain

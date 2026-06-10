@@ -26,21 +26,21 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 ## Workflow
 
 1. Understand the feature, issue, or review goal and decide the intended test scope.
-2. Create fresh meaningful expectations for this run using the local Allure agent expectation mechanism.
+2. Decide whether expectation controls reduce a real risk for this run. When they do, create the smallest fresh expectations supported by the local Allure agent.
 3. Write or update the tests using test-design rules, or keep the current tests unchanged if the task is review-only.
 4. Run only the intended scope with `allure agent` before relying on raw console output.
 5. Print the run's `index.md` path from the output directory so collaborators can open the run overview quickly.
 6. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and the relevant test markdown files before inspecting source code.
 7. If evidence is weak, enrich the tests with real steps, attachments, or minimal metadata.
 8. Confirm the run is a trustworthy signal: the selected profile fits the goal, important tests are not silently excluded, and any non-gating local or CI signal is called out.
-9. Rerun with a new temp output directory and fresh expectations for the same intended scope.
+9. Rerun with a new temp output directory and fresh expectations when expectation controls are still justified for the same intended scope.
 10. Accept only when scope matches, coverage remains meaningful, evidence is good enough to review, execution limitations are explicit, and any partial runtime modeling has been called out.
 
 ## Review Variants
 
 ### Small Test Change Workflow
 
-1. Create fresh meaningful expectations and a temp output directory for the touched scope.
+1. Create a temp output directory and, when justified, the smallest meaningful expectations for the touched scope.
 2. Run the touched scope with `allure agent`, even if the goal is only a smoke check after a mechanical change such as typing cleanup, mock refactors, or helper extraction.
 3. Print the run's `index.md` path from the output directory.
 4. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, and `manifest/findings.jsonl`.
@@ -49,10 +49,10 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 ### Coverage Review Workflow
 
 1. Split command or package audits into scoped groups.
-2. Give each group its own meaningful expectations and temp output directory.
+2. Give each group its own temp output directory and use expectations only when the group has a known scope or will support a validation conclusion.
 3. Run each group with `allure agent`.
 4. Review runtime artifacts first, then inspect source code only after the run explains what actually executed.
-5. Mark the review incomplete until each scoped group either matched expectations or was explicitly documented as a broad package-health audit.
+5. Mark the review incomplete until each scoped group is validated through matched expectations, reviewed observed scope, or explicit broad package-health documentation.
 
 Compact coverage-review pattern:
 
@@ -61,20 +61,20 @@ TMP_DIR="$(mktemp -d)"
 
 npx allure agent \
   --output "$TMP_DIR/agent-output" \
-  <local expectation options from allure agent --help> \
+  <minimal local expectation options when justified> \
   -- npm test -- <scope>
 ```
 
-Before running, decide what should run, what should not run, and why that scope is enough. Express it with the expectation controls supported by the local Allure agent.
+Before running, decide what should run, what should not run, why that scope is enough, and whether an expectation option would catch a real mistake. Express only justified controls supported by the local Allure agent.
 
 ## Requirements
 
 - Every run must use a unique temp `ALLURE_AGENT_OUTPUT`.
-- Every run must use fresh expectations for the intended scope when local expectation controls are available.
+- Runs that use expectations must use fresh expectations for the intended scope.
 - Parallel runs must never share output paths or expectation state.
 - After each agent-mode test run, print the `index.md` path from that run's output directory.
-- Inspect `allure agent --help` before assuming a file-based expectations format or specific expectation option names.
-- Broad package-health audits may omit expectations, but the review must call out that scope checks are weaker.
+- Inspect `allure agent --help` before assuming specific expectation option names. Prefer inline options; use file-based expectations only as advanced mode for large, generated, or policy-controlled contracts.
+- Do not add expectation flags defensively. If expectation controls are unavailable or not justified, review observed scope from the output and call out weaker scope checking.
 - If a run, local command, or CI job is non-gating or excludes important tests by default, call that out before using it as proof.
 - Metadata enrichment is part of this loop, not a separate workflow.
 

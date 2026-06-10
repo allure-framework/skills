@@ -4,8 +4,6 @@ This repository contains Allure Report skills.
 
 Start with `README.md` for the repository purpose, install examples, and release checklist.
 
-For maintainer-only Allure agent-mode command guidance, generated project-guide design, and CLI help wording, read `docs/allure-agent-mode-reference.md`. Do not copy that file into installable skills unless the guidance is intentionally user-facing.
-
 ## Validation
 
 Run:

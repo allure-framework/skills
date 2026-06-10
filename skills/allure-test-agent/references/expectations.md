@@ -2,154 +2,172 @@
 
 ## Purpose
 
-Expectations are a pre-run scope contract. They state what the agent believes should run, what should not run, what evidence should exist, and why that scope is enough for the task.
+Expectations are a pre-run scope contract for `allure agent`. They help an agent avoid false confidence by stating the run scope and evidence requirements before executing tests.
 
-Expectations protect against false confidence. A run is not trustworthy merely because "expectations were met" if the expectations were generic, empty, written after the run, or too weak for the conclusion.
-
-## Use This When
-
-- creating expectations before an Allure agent run
-- choosing scope for smoke, affected, feature, component, package, or full-profile validation
-- deciding whether broad package-health runs are acceptable
-- evaluating scope drift, missing tests, unexpected tests, or weak evidence after a run
-- writing user-facing conclusions from Allure agent output
+Expectations are not test assertions. Test assertions define product behavior. Agent expectations define what the validation run is supposed to cover and what conclusion it can support.
 
 ## Core Rule
 
-Create expectations before the run from the user goal, expected behavior, selected scope, and local Allure agent capabilities.
+Use expectations only when they reduce a real risk in the current validation run. Do not add expectation flags defensively or decoratively.
 
-Do not create expectations just to satisfy a workflow requirement. If the agent cannot explain why an expectation matters, the expectation is not ready.
-
-## In This File
-
-- [Discover Local Support](#discover-local-support)
-- [Expectation Contract](#expectation-contract)
-- [How To Decide Scope](#how-to-decide-scope)
-- [Exact, Broad, And Fallback Scope](#exact-broad-and-fallback-scope)
-- [Evidence Expectations](#evidence-expectations)
-- [Broad Audits](#broad-audits)
-- [Expectation Smells](#expectation-smells)
-- [After The Run](#after-the-run)
+For every expectation option, know which mistake it should catch. If no concrete mistake would be caught, omit the option and rely on the run output and findings.
 
 ## Discover Local Support
 
-Expectation controls are version-specific. Before creating expectations, read the project guide or inspect local CLI help:
+Expectation controls are version-specific. Before using them, read the project guide or inspect local CLI help:
 
 ```bash
 allure agent --help
 ```
 
-Use the expectation mechanism supported by the local Allure agent, such as CLI options, command goals, supported expectation flags, or an expectations file. Do not assume file-based expectations or specific option names unless local help confirms them.
+Use only controls supported by the installed Allure version. Do not assume a file schema, inline option name, or matching behavior that local help does not expose.
 
-If local help does not expose a meaningful expectation mechanism, run the narrowest practical test command and state that expectation checking was unavailable or weaker.
+Prefer inline expectation options. They are usually cheaper, easier to read in the executed command, and avoid extra temporary files that the agent must explain or clean up.
 
-## Expectation Contract
+Use `--expectations <file>` only as advanced mode when the contract is too large or generated, such as many expected tests, a policy-controlled contract, or a matrix/rerun contract that would make inline options unreadable.
 
-Good expectations are falsifiable against the run output. They answer:
+If local expectation support is unavailable or too weak, run the narrowest practical command, review observed scope from the output, and state that expectation checking was limited.
 
-- what user goal, bug, feature, review, or risk the run is meant to support
-- which test, suite, file, package, module, feature, component, label, or profile should run
-- which adjacent or unrelated scope should not run
-- which environment, service, browser, platform, data variant, or parameter set is intended when it affects the conclusion
-- what important checks, matchers, assertions, or evidence should be visible
-- what skipped, muted, quarantined, blocked, or known-failing tests are acceptable, if any
-- whether the scope is exact, selector-based, label-based, command-scoped, affected, smoke, broad, or full
-- why this scope is enough, and what it cannot prove
+## When To Use Expectations
 
-The contract should match the conclusion the agent wants to make. A smoke expectation can support a smoke conclusion; it cannot support a full-regression conclusion.
+Use expectations for runs that support a user-facing validation conclusion, especially:
 
-## How To Decide Scope
+- fixing one known failing test
+- fixing product behavior with existing focused tests
+- adding or changing tests for a feature or regression
+- smoke-checking a changed area
+- reviewing one specific test
+- validating runtime evidence enrichment
+- debugging API, browser, CLI, SQL, image, trace, or fixture behavior where a specific artifact matters
+- validating metadata changes that affect selection, grouping, ownership, links, or report understanding
+- rerunning a focused slice from prior agent output
+- checking flakiness or environment-specific behavior for a known scope
 
-Create expectations before the run from observable context:
+Do not use expectations just because a command runs tests. If the task is still discovery-oriented or the intended scope is unknown, first discover the project, inspect prior output, or run a broad exploratory command and keep the conclusion narrow.
 
-- user request, acceptance goal, issue, bug, or requirement
-- expected behavior sources from `test-design.md`
-- changed files, affected components, ownership, and nearby tests
-- existing test inventory, labels, suites, packages, features, stories, or services
-- project run profiles and their documented confidence limits
-- selected command or intent-level service request
-- previous agent output, failed tests, weak-evidence findings, or rerun plan
-- known adjacent scope that should stay out of the run
+## Minimal Option Policy
 
-Prefer the narrowest honest expectation. Use exact tests when known; use selectors, labels, modules, profiles, or command scope when exact names are not practical.
+Start with the smallest falsifiable expectation:
 
-Do not silently widen expectations to match an easy command. If the command is broader than the intended scope, say so and treat the run as broader validation with weaker scope precision.
+1. Include a concrete `--goal` when supported. Treat it as the intended claim boundary for evidence review, not as proof by itself.
+2. Add one strongest scope control when the intended scope is known. Common scope controls are:
+   - `--expect-env <id>` when the environment matters to the conclusion
+   - `--expect-label name=value` when project labels are trusted
+   - `--expect-prefix <prefix>` for a stable suite, file, package, or full-name prefix
+   - `--expect-test "<fullName>"` for a known individual test
+3. Add `--expect-tests <count>` only when the exact count is stable and meaningful, such as one exact test review or an explicit zero-test absence check.
+4. Add `--forbid-label name=value` only when there is a known unwanted labeled scope that must not be part of the run.
+5. Add evidence expectations only when evidence quality is part of the task or required for debugging. Use step-name, step-count, attachment-count, or attachment-filter expectations only when each one protects a concrete review/debugging need.
 
-## Exact, Broad, And Fallback Scope
+Prefer one strong scope expectation over several weak ones. Do not combine labels, prefixes, counts, forbids, and evidence requirements unless each option protects against a different concrete risk.
 
-Use exact expectations when the intended tests are known and the local CLI supports exact matching.
+Do not create an expectations file for a small contract that fits naturally in command options.
 
-Use selector or label expectations when exact names are unstable or unavailable, but the project metadata is reliable.
+## Common Patterns
 
-Use command-scoped expectations when the runner command is the best available boundary, but state that expectation matching is weaker.
+### Known Test Fix
 
-Use broad expectations only when the task is explicitly a package-health, inventory, discovery, migration, or exploratory review. Broad expectations should not be presented as precise proof for a narrow behavior.
+Use when validating a specific failing test after a code or fixture change.
 
-If local expectation support is missing or too weak:
+```bash
+allure agent \
+  --goal "verify the fixed checkout discount test" \
+  --expect-test "test/checkout.test.ts#checkout applies percentage discount" \
+  --expect-tests 1 \
+  -- npm test -- test/checkout.test.ts
+```
 
-1. Narrow the test command as much as practical.
-2. Record the intended scope in the run goal or final notes.
-3. Review observed scope from manifests before making a conclusion.
-4. State that expectation checking was limited.
+If the expected test is missing or the count differs, do not claim the fix is validated. Correct the selector, restore coverage, or rerun the intended test.
 
-## Evidence Expectations
+### Focused Feature Or Bug Validation
 
-Expectations may include evidence requirements when local controls support them, or they may be stated in the run goal and reviewed after execution.
+Use one scope boundary that matches the project best.
 
-Useful evidence expectations include:
+```bash
+allure agent \
+  --goal "verify checkout discount regression coverage" \
+  --expect-prefix "test/checkout.test.ts#checkout" \
+  -- npm test -- test/checkout.test.ts
+```
 
-- important assertions or matchers should be visible
-- setup, action, and assertion phases should be represented as steps
-- API, browser, CLI, SQL, fixture, image-diff, or trace artifacts should exist when they are needed for review
-- dynamic parameters should not split history when they do not define test identity
-- expected labels, descriptions, links, or parameters should be present when they affect selection, grouping, or report understanding
+or:
 
-Do not invent evidence requirements that are unrelated to the behavior. Use `allure-evidence.md` to decide which evidence matters.
+```bash
+allure agent \
+  --goal "verify checkout discount regression coverage" \
+  --expect-label feature=checkout \
+  -- npm test -- --grep checkout
+```
 
-## Broad Audits
+If the command is broader than the expected scope, say so in the final conclusion.
 
-Broad audits may use weaker expectations when exact scope is not practical. Examples include:
+### Smoke Check
 
-- package-health review
-- inventory or discovery run
-- migration smoke across many modules
-- "what does this suite currently do?" review
-- exploratory run before creating a better selection profile
+Use a goal that names the validation depth. Add a smoke label or prefix only when the project actually has one.
 
-For broad audits:
+```bash
+allure agent \
+  --goal "smoke-check checkout after discount change; does not prove full checkout regression" \
+  --expect-label layer=smoke \
+  -- npm test -- --grep "@checkout.*@smoke"
+```
 
-- state that the run is broad before execution
-- define the boundary that is known, such as package, module, command, profile, or label
-- avoid claiming that every important behavior was covered
-- report missing, unexpected, weakly evidenced, or unobserved areas after the run
+Do not present a smoke expectation as full regression proof.
 
-## Expectation Smells
+### Evidence Enrichment Or Debug Artifact Check
 
-Treat these as invalid or weak:
+Use evidence options when the artifact or evidence shape matters to the task.
 
-- expectations written after seeing the run result
-- generic goals such as `Run tests`, `all good`, `validate`, or `make sure it passes`
-- no expected scope
-- no reason why the scope supports the user goal
-- placeholder labels such as `module: my-module`
-- labels, selectors, or profiles not used by the project
-- expectations that only say tests should pass without saying what should run
-- broad package expectations presented as precise safety proof
-- forbidden or unrelated scope omitted when adjacent tests are likely to run
-- evidence expectations that require filler steps or noisy attachments
-- expectations widened to match the command without reporting reduced precision
-- final claims that say expectations were met without explaining weak or unavailable expectation support
+```bash
+allure agent \
+  --goal "verify checkout API evidence includes the HTTP exchange" \
+  --expect-test "test/api/checkout.test.ts#checkout API creates order" \
+  --expect-step-containing "response contains created order id" \
+  --expect-attachment content-type=application/vnd.allure.http \
+  -- npm test -- test/api/checkout.test.ts
+```
+
+Do not require attachments for ordinary unit tests unless an attachment is actually needed to understand the result.
+
+Use specific step substrings that describe the behavior or check, not generic text like `check`, unless that exact convention is documented for the project.
+
+### Focused Rerun
+
+Use rerun controls from local help, then add only the filters that are part of the rerun intent.
+
+```bash
+allure agent \
+  --goal "rerun checkout failures from the previous agent output" \
+  --rerun-from /tmp/allure-agent-output-before \
+  --expect-label feature=checkout \
+  -- npm test
+```
+
+If the output reports scope drift, missing expected scope, or weak rerun selection, treat the rerun as incomplete.
 
 ## After The Run
 
 Review expectation results as evidence, not ceremony:
 
 - If expected scope did not run, do not claim the change is covered.
-- If unexpected scope ran, call out scope drift.
-- If important checks or evidence are missing, treat the run as weak evidence even if tests passed.
-- If expected skips or suppressions changed, review whether coverage or execution trust changed.
+- If unexpected scope ran, call out scope drift or rerun a narrower command.
+- If evidence expectations were missed, enrich the evidence or downgrade the conclusion.
 - If expectations were broad, state that scope checking was weaker.
-- If local expectation support was unavailable, explain the fallback and keep conclusions provisional.
-- If expectations were meaningful and matched, use that as support for the review conclusion.
+- If local expectation support was unavailable, explain the fallback and keep the conclusion provisional.
+- If the Allure output reports findings, follow the recommended actions from the output files.
+- If the goal was weak, stale, or wrong, keep the runtime evidence and state the narrower conclusion it actually supports, or rerun with a corrected goal.
 
 When expectation results and runtime evidence disagree, trust the observed runtime evidence and report the mismatch.
+
+## Smells
+
+Treat these as weak or invalid expectation usage:
+
+- expectations written after seeing the run result
+- generic goals such as `Run tests`, `validate`, or `make sure it passes`
+- expectations that only say tests should pass without saying what should run
+- exact test counts for unstable broad suites
+- forbids added without a known unwanted scope
+- evidence requirements that force filler steps or noisy attachments
+- expectations widened to match an easy command without reporting reduced precision
+- final claims that say expectations were met without explaining weak or unavailable expectation support

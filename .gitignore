@@ -26,3 +26,10 @@ allure-report/
 allure-results-*.zip
 agent-output/
 .allure-agent/
+.agent-validation-results/
+
+# Maintainer-only design and evaluation material.
+docs/
+evals/
+scripts/agent-validation/
+.github/workflows/allure-agent-validation.yml
