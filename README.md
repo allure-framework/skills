@@ -4,7 +4,7 @@
 
 Portable Agent Skills for using Allure Report as the evidence layer for test work.
 
-These skills help coding agents write, review, debug, and maintain tests without relying only on raw console output or a final pass/fail status. They are intentionally version-light: durable workflow guidance lives in the skills, while exact Allure CLI commands and supported options are discovered from the project and `allure agent --help`.
+These skills help coding agents configure Allure reporting and write, review, debug, and maintain tests without relying only on raw console output or a final pass/fail status. They are intentionally version-light: durable workflow guidance lives in the skills, while exact Allure CLI commands and supported options are discovered from the project and local Allure help.
 
 ## Problems
 
@@ -12,7 +12,7 @@ Agents working near tests often fail in predictable ways:
 
 - They treat a green command as proof, even when the wrong tests ran.
 - They read raw console output and miss structured runtime context.
-- They repeatedly rediscover test commands, result paths, selectors, and framework details.
+- They repeatedly rediscover test commands, Allure results paths, selectors, and framework details.
 - They delete, skip, relax, or replace assertions because that is the shortest path to a passing build.
 - They add tests with weak assertions, unclear intent, or no visible evidence of what was checked.
 - They produce claims users cannot audit because the evidence is fragmented or missing.
@@ -51,14 +51,22 @@ The goal is not to make agents run more commands. The goal is to make test-relat
 
 | Skill | Use it for | Main output |
 | --- | --- | --- |
-| `allure-test-agent-setup` | Adopting Allure test-agent guidance in a repository. | Root agent router files and `docs/allure-test-agent.md` in the target project. |
+| `allure-configure-reporting` | Configuring Allure adapters, report commands, rich evidence, and CI report or artifact handling. | A working or clearly bounded Allure reporting setup with validation notes. |
+| `allure-configure-agent-workflow` | Configuring AI-agent workflow guidance for Allure test work in a repository. | Root agent router files and `docs/allure-test-agent.md` in the target project. |
 | `allure-test-agent` | Writing, reviewing, debugging, enriching, and maintaining tests through Allure agent mode. | Better test changes, better runtime evidence, and more trustworthy validation conclusions. |
 
-Use `allure-test-agent-setup` once per project, then use `allure-test-agent` for normal test work.
+Use `allure-configure-reporting` when a project needs reporting configured, use `allure-configure-agent-workflow` once per project to record local agent workflow guidance, then use `allure-test-agent` for normal test work.
 
 ## What The Skills Do
 
-`allure-test-agent-setup` prepares a repository for future test work by:
+`allure-configure-reporting` configures Allure reporting in a repository by:
+
+- detecting active test frameworks, build systems, package managers, existing Allure config, Allure results paths, report commands, and CI files
+- selecting the smallest adapter, tool, command, evidence, or CI artifact change for the requested surface
+- validating that tests emit Allure results, Allure report generation consumes the intended results path, or CI preserves/publishes the expected artifacts
+- keeping examples advisory so agents can inspect local project facts and current official docs before editing
+
+`allure-configure-agent-workflow` prepares a repository for future test work by:
 
 - detecting local Allure and test-runner facts
 - checking the local Allure wrapper, `allure --version`, and `allure agent --help`
@@ -66,7 +74,7 @@ Use `allure-test-agent-setup` once per project, then use `allure-test-agent` for
 - creating `docs/allure-test-agent.md` with local commands, capabilities, run profiles, output policy, evidence conventions, expectation controls, and known unknowns
 - avoiding exact stored Allure versions so generated project guidance does not go stale immediately
 
-The setup skill does not try to turn every repository into the same shape. It records the local shape so later agents stop rediscovering it.
+The workflow configuration skill does not try to turn every repository into the same shape. It records the local shape so later agents stop rediscovering it.
 
 `allure-test-agent` guides day-to-day test work:
 
@@ -82,9 +90,9 @@ The setup skill does not try to turn every repository into the same shape. It re
 
 - Node.js 18 or newer for `npx skills`.
 - A target project with tests.
-- Allure CLI `allure@3.11.0` or newer with `allure agent` for the full runtime-evidence workflow.
+- Reporting configuration needs the target project's normal package manager, build system, test runner, and Allure adapter/tooling choices.
 
-If Allure is not configured yet, use `allure-test-agent-setup` first. It can document the missing pieces and guide the smallest viable bootstrap for the local project.
+If Allure reporting is not configured yet, use `allure-configure-reporting` first. Use `allure-configure-agent-workflow` to document local agent workflow guidance once reporting works or the missing pieces are understood.
 
 ## Installation
 
@@ -132,7 +140,19 @@ Each installable skill lives under `skills/<skill-name>`:
 
 ```text
 skills/
-  allure-test-agent-setup/
+  allure-configure-reporting/
+    SKILL.md
+    CLAUDE.md
+    agents/openai.yaml
+    references/
+      additional-integrations.md
+      build-system-commands.md
+      ci-integrations.md
+      concepts.md
+      examples.md
+      test-frameworks.md
+      tool-installation.md
+  allure-configure-agent-workflow/
     SKILL.md
     CLAUDE.md
     agents/openai.yaml

@@ -15,7 +15,7 @@ Use this skill for feature or bug work that changes tests, for reviewing existin
 
 If the project has `docs/allure-test-agent.md`, read it before writing or reviewing tests.
 
-If it does not, use the guidance in this skill and suggest using `$allure-test-agent-setup` later.
+If it does not, use the guidance in this skill and suggest using `$allure-configure-agent-workflow` later.
 
 Read `references/test-design.md` before adding, changing, deleting, skipping, suppressing, or reviewing tests.
 
@@ -33,14 +33,14 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 6. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and the relevant test markdown files before inspecting source code.
 7. If evidence is weak, enrich the tests with real steps, attachments, or minimal metadata.
 8. Confirm the run is a trustworthy signal: the selected profile fits the goal, important tests are not silently excluded, and any non-gating local or CI signal is called out.
-9. Rerun with a new temp output directory and fresh expectations when expectation controls are still justified for the same intended scope.
+9. Rerun with a fresh agent output directory and fresh expectations when expectation controls are still justified for the same intended scope. Use the CLI-provided temp output unless a specific path is needed.
 10. Accept only when scope matches, coverage remains meaningful, evidence is good enough to review, execution limitations are explicit, and any partial runtime modeling has been called out.
 
 ## Review Variants
 
 ### Small Test Change Workflow
 
-1. Create a temp output directory and, when justified, the smallest meaningful expectations for the touched scope.
+1. Decide whether to use the CLI-provided temp output directory or an explicit `--output` path, and create the smallest meaningful expectations for the touched scope when justified.
 2. Run the touched scope with `allure agent`, even if the goal is only a smoke check after a mechanical change such as typing cleanup, mock refactors, or helper extraction.
 3. Print the run's `index.md` path from the output directory.
 4. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, and `manifest/findings.jsonl`.
@@ -49,12 +49,12 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 ### Coverage Review Workflow
 
 1. Split command or package audits into scoped groups.
-2. Give each group its own temp output directory and use expectations only when the group has a known scope or will support a validation conclusion.
+2. Ensure each group has distinct agent output and use expectations only when the group has a known scope or will support a validation conclusion. Use explicit `--output` paths only when useful for organizing groups.
 3. Run each group with `allure agent`.
 4. Review runtime artifacts first, then inspect source code only after the run explains what actually executed.
 5. Mark the review incomplete until each scoped group is validated through matched expectations, reviewed observed scope, or explicit broad package-health documentation.
 
-Compact coverage-review pattern:
+Compact coverage-review pattern when an explicit output path is useful:
 
 ```bash
 TMP_DIR="$(mktemp -d)"
@@ -69,7 +69,10 @@ Before running, decide what should run, what should not run, why that scope is e
 
 ## Requirements
 
-- Every run must use a unique temp `ALLURE_AGENT_OUTPUT`.
+- Full agent-mode runtime evidence requires Allure CLI `allure@3.11.0` or newer with `allure agent`.
+- Before relying on agent-mode conclusions, confirm the local project wrapper supports `allure agent` and is not below the minimum version. If the wrapper reports an older version, warn the user and treat agent-mode evidence as unavailable or incomplete until the CLI is upgraded.
+- Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed.
+- When choosing a specific output directory, prefer the supported `--output` option. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
 - Runs that use expectations must use fresh expectations for the intended scope.
 - Parallel runs must never share output paths or expectation state.
 - After each agent-mode test run, print the `index.md` path from that run's output directory.

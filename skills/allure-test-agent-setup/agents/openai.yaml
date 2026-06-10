@@ -1,7 +1,0 @@
-interface:
-  display_name: "Allure Test Agent Setup"
-  short_description: "Add Allure test-agent guidance to a project"
-  default_prompt: "Use $allure-test-agent-setup to add Allure test-agent guidance to this project."
-
-policy:
-  allow_implicit_invocation: true

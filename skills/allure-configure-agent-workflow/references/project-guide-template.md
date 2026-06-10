@@ -11,18 +11,18 @@ Runtime first, source second.
 - If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through the local agent test service when available, or through `allure agent` otherwise.
 - Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
 - Only skip agent mode when it is impossible or when debugging agent mode itself.
-- If agent-mode output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
+- If agent output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
 
 ## Local Capability Snapshot
 
-Refresh this section when Allure, test runners, CI, or project wrappers change. Confirm local support with the project wrapper, `allure --version`, and `allure agent --help` before using optional commands.
+Refresh this section when Allure, test runners, Allure results paths, Allure report generation, CI, or project wrappers change. Confirm local support with the project wrapper, `allure --version`, and `allure agent --help` before using optional commands.
 
 Do not store the exact Allure version here. Version output is a runtime fact; this file should store the wrapper, last snapshot marker, and how to refresh capabilities.
 
 - Allure wrapper: `<fill during setup, e.g. yarn allure, npx allure, pnpm allure, ./gradlew allure>`
 - Capability snapshot last checked: `<fill date, commit, or unknown>`
 - Refresh capabilities with: `<wrapper> --version` and `<wrapper> agent --help`
-- Agent execution: `<supported / unsupported / unknown>`
+- Agent execution: `<supported / limited / unsupported / unknown>`
 - Output option: `<fill supported syntax or unknown>`
 - Expectation controls: `<fill supported options, command goal controls, file format, or unknown>`
 - Latest/state directory recovery: `<supported / unsupported / unknown>`
@@ -48,7 +48,7 @@ Use the local agent test service when the project provides one and the task is q
 
 - Test frameworks and runners: `<fill during setup>`
 - Test roots: `<fill during setup>`
-- Allure result paths: `<fill during setup>`
+- Allure results paths: `<fill during setup, e.g. <parent>/allure-results>`
 - Known selector support: `<file/test name/label/package/suite/test plan/unknown>`
 - Known environments or services needed for tests: `<fill during setup>`
 
@@ -58,7 +58,7 @@ Document only integrations detected or explicitly configured in this project.
 
 - Existing Allure adapters/integrations: `<fill or unknown>`
 - Runner config files: `<fill or unknown>`
-- Allure results directories: `<fill or unknown>`
+- Result-path configuration: `<config file, option, property, env var, or unknown>`
 - Supported integration configuration targets: `<specified integration / all discovered / none / unknown>`
 - Validation command for integration setup: `<focused smoke, discovery only, or unknown>`
 - Known unsupported or skipped integrations: `<fill with reasons or unknown>`
@@ -146,7 +146,7 @@ Treat the run goal as a claim boundary for review, not as proof. If the goal is 
 4. Write or update focused tests without weakening useful coverage.
 5. Run the intended scope through agent mode.
 6. Review scope, checks, evidence, and execution signal before claiming validation.
-7. Enrich tests when evidence is weak, then rerun with fresh temp output.
+7. Enrich tests when evidence is weak, then rerun with fresh agent output.
 
 ### Evidence And Metadata Enrichment Loop
 
@@ -161,7 +161,7 @@ Use this when tests pass but are hard to review:
 ### Coverage Review Loop
 
 1. Split broad audits into scoped groups when practical.
-2. Give each group a unique temp output directory and use expectations only when the group has a known scope or supports a validation conclusion.
+2. Ensure each group has distinct agent output and use expectations only when the group has a known scope or supports a validation conclusion. Use explicit `--output` paths only when useful for organizing groups.
 3. Run each group through agent mode.
 4. Separate observed runtime coverage from inferred source-code coverage.
 5. Mark review incomplete until every scoped group was validated through matched expectations, reviewed observed scope, or documented as a broad package-health audit.
@@ -180,9 +180,9 @@ After each agent-mode run:
 
 ## Output, State, And Reruns
 
-Do not create persistent output or expectation paths. Use unique temp paths for every run.
+Do not create persistent agent output or expectation paths. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. Prefer `--output` for explicit paths. Allure results paths such as `<parent>/allure-results` are separate reporting configuration and may be stable project paths.
 
-- Agent output policy: `<unique temp dir / project convention / unknown>`
+- Agent output policy: `<CLI-provided temp dir / explicit --output convention / unknown>`
 - Latest output recovery: `<supported command or unknown>`
 - State directory override: `<supported env var or unknown>`
 - Rerun from latest/prior output: `<supported command or unknown>`

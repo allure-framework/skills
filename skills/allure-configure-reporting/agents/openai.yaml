@@ -1,0 +1,7 @@
+interface:
+  display_name: "Configure Allure Reporting"
+  short_description: "Configure Allure adapters, reports, evidence, and CI"
+  default_prompt: "Use $allure-configure-reporting to configure Allure reporting in this project."
+
+policy:
+  allow_implicit_invocation: true
