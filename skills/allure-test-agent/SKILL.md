@@ -73,6 +73,8 @@ Before running, decide what should run, what should not run, why that scope is e
 - Before relying on agent-mode conclusions, confirm the local project wrapper supports `allure agent` and is not below the minimum version. If the wrapper reports an older version, warn the user and treat agent-mode evidence as unavailable or incomplete until the CLI is upgraded.
 - Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed.
 - When choosing a specific output directory, prefer the supported `--output` option. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
+- Agent output, framework Allure results, and generated reports are separate artifacts. Do not use framework result settings such as `ALLURE_RESULTS_DIR` as agent-output controls.
+- Do not add or override framework result directories in an agent command unless the project guide, runner config, or adapter docs require it for this run. When a per-run result directory is needed, keep its final path component `allure-results` and ensure it is discoverable by the local Allure command.
 - Runs that use expectations must use fresh expectations for the intended scope.
 - Parallel runs must never share output paths or expectation state.
 - After each agent-mode test run, print the `index.md` path from that run's output directory.

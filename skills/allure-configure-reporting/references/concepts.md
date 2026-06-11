@@ -23,6 +23,8 @@ Keep the result directory basename stable as `allure-results`. Vary the parent p
 
 This is the recommended convention even when an adapter supports a custom result path. It is also important for `allure run`: by default, `allure run` looks for directories named `allure-results` as a discovery gate so it does not process arbitrary files across the filesystem. If a project wants to use `allure run` with Allure results from a framework adapter, the result directory should be named `allure-results`.
 
+Framework result settings such as `ALLURE_RESULTS_DIR` control where an adapter writes raw results; they do not control `allure agent` output. Do not add them to agent-mode commands unless the integration documents them or the project guide already requires them.
+
 Preferred pattern:
 
 - Maven: `target/allure-results`
