@@ -71,8 +71,10 @@ Fill only conventions that exist in this project. Durable test-design rules stay
 - Accepted test layers: `<unit/component/integration/API/browser/CLI/etc. or unknown>`
 - Preferred assertion style: `<framework matchers, custom assertions, deep-match messages, or unknown>`
 - Parameterized test style: `<case naming, parameter reporting, limits, or unknown>`
+- Boring-test preference: `<explicit tests over loops/factories/conditionals, shared business-step helpers, or unknown>`
 - Smoke coverage conventions: `<higher-layer smoke expectations or unknown>`
 - Mocking and integration-test preference: `<project rule or unknown>`
+- Explicit skip/assumption mechanics: `<it.skip/it.skipIf/assumeThat/xfail/quarantine/setup failure convention or unknown>`
 - Suppression/quarantine policy: `<owner/reason/issue/expiry/restore path or unknown>`
 
 ## Run Profiles
@@ -99,6 +101,8 @@ Do not present ignored, excluded, swallowed, advisory, or non-gating test execut
 - Test artifacts retained by CI: `<Allure output, logs, traces, none, or unknown>`
 
 If CI or local execution is non-gating, excludes important tests, or swallows failures, call that out before using the run as proof.
+
+Do not hide missing or unsupported coverage behind runtime `if` branches, early returns, conditional test registration, or helper aliases. Use the project's explicit skip, conditional-skip, assumption, xfail, quarantine, or setup-failure convention so the runner and Allure evidence show the reason.
 
 ## Local Expectation Controls
 
@@ -155,7 +159,7 @@ Use this when tests pass but are hard to review:
 
 1. Identify weak evidence, missing checks, missing setup state, missing artifacts, or noisy metadata.
 2. Prefer framework integrations and helper-boundary instrumentation over wrapping every line.
-3. Add useful steps, attachments, parameters, descriptions, labels, or links using project conventions.
+3. Add useful steps, attachments, parameters, descriptions, labels, or links using project conventions, keeping per-test intent metadata inline with each test.
 4. Redact sensitive values while preserving useful artifact shape.
 5. Rerun the same intended scope and report evidence changes.
 
@@ -196,6 +200,8 @@ Allure results paths such as `<parent>/allure-results` are separate reporting co
 ## Project Metadata Conventions
 
 Fill only conventions that exist in this project.
+
+Per-test metadata belongs inline with the test. Do not centralize descriptions, labels, links, parameters, or intent-defining step names in helper wrappers, lookup tables, or mappings keyed by test name. Reusable helpers may handle mechanics only; test intent should stay explicit at each test site.
 
 - Feature/story/component/service labels: `<fill or unknown>`
 - Owner/team metadata: `<fill or unknown>`

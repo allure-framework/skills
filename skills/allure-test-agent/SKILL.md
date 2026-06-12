@@ -86,10 +86,14 @@ Before running, decide what should run, what should not run, why that scope is e
 
 - Runtime first, source second.
 - Tests are behavior contracts; do not weaken assertions, skip tests, or delete coverage just to make the run pass.
+- Keep tests boring and explicit. Prefer readable, stable, linear tests over conditional logic, loops, factories, or generated tests whose main value is saving a few repeated lines.
+- Do not hard-skip tests with runtime `if` branches or helper aliases that hide coverage gaps; use runner-native skip, conditional-skip, or assumption mechanics with clear reasoning.
 - Steps must represent real behavior, not filler.
 - Attachments must come from the current execution.
 - Keep metadata minimal and only add labels that help review or policy.
+- Keep per-test intent metadata inline with the test: descriptions, labels, links, parameters, and intent-defining step names must be explicit at each test site.
 - Prefer helper-boundary instrumentation over repetitive caller wrapping.
+- Reusable helpers may handle mechanics, but must not centralize test intent in wrappers, lookup tables, or test-name mappings.
 - If runner-visible failures are not represented as logical tests, inspect global stderr and treat the run as a partial runtime review.
 - Do not present ignored, excluded, swallowed, or non-gating tests as a passing validation signal.
 

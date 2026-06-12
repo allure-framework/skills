@@ -24,6 +24,7 @@ Optimize for enough evidence to debug and understand root cause without reading 
 - Make collected evidence human-readable in the report.
 - Make collected evidence agent-readable with clear names, structured data, and real state snapshots.
 - Avoid metadata that does not affect execution, review, selection, routing, history, or policy.
+- Keep per-test intent metadata inline with the test. Descriptions, labels, links, parameters, and intent-defining step names should be explicit at each test site instead of hidden in helper wrappers, lookup tables, or test-name mappings.
 
 ## In This File
 
@@ -77,6 +78,7 @@ Treat these as signs that test evidence may need to be redesigned:
 - Artifacts that expose secrets, credentials, tokens, private customer data, or other sensitive values.
 - Redaction that destroys the artifact shape so the state can no longer be understood.
 - Labels, parameters, or descriptions that do not help execution, review, selection, routing, history, or policy.
+- Descriptions, labels, links, parameters, or intent-defining step names generated from centralized maps, helper wrappers, or test-name lookups instead of being visible at the test site.
 
 ## Steps
 
@@ -89,6 +91,8 @@ Use steps for important runtime actions and behavior boundaries:
 - cleanup that affects the scenario or future retries
 
 Step names must be human-readable. Prefer concrete names over generic names with noisy parameters. For example, `open page https://example.org` is often better than `open page` with parameter `page=https://example.org`.
+
+When shared test code is extracted, it is usually most useful when it represents a business-relevant setup, action, assertion, or cleanup block that can be named as a useful step. Small duplication is acceptable in tests; optimize for readable, stable, linear scenarios before optimizing for fewer repeated lines.
 
 Avoid unnecessary or highly dynamic step parameters. Dynamic values in step parameters can make reports noisy and can reduce retry/history usefulness when they are not important to the behavior.
 
@@ -157,6 +161,8 @@ Use Allure runtime APIs and available integrations to report evidence at the rig
 Prefer instrumenting stable helper boundaries such as API clients, page objects, SQL helpers, fixture builders, or `runCommand`. Avoid rewriting or wrapping every single line of test code with manual steps.
 
 Manual runtime API calls are still useful when no integration exists or when a specific artifact matters, but keep them close to the behavior they describe.
+
+Reusable helpers may handle mechanics, such as attaching an HTTP exchange, redacting a fixture snapshot, recording a command log, or applying a project-standard label that is not test-specific. They should not own the test's intent. Keep the scenario description, issue or requirement links, scenario parameters, behavior labels, and custom step names that define what the test proves inline with the test itself.
 
 ## Parameters
 

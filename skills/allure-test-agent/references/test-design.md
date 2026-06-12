@@ -54,6 +54,8 @@ Treat execution as part of test design. A good test that is excluded by default,
 - Prefer fixing product code, fixtures, setup, data, selectors, environment, or an incorrect expectation before weakening a test.
 - Preserve meaningful assertions unless evidence shows the tested behavior or test intent is wrong.
 - Any removed test, weakened assertion, skipped test, muted failure, quarantine, or ignored result needs explicit rationale.
+- Keep tests boring and explicit. Prefer readable, stable, linear tests over conditional logic, loops, factories, or generated tests whose main value is saving a few repeated lines.
+- Do not hard-skip tests with runtime `if` branches, early returns, conditional registration, or helper aliases that hide the missing coverage from the runner and report.
 - New tests should prove behavior that matters, not merely execute code.
 - When practical, a new or changed regression test should fail for the intended bug before the fix and pass after the fix.
 - If expected behavior is unclear, report uncertainty instead of inventing a weaker expectation.
@@ -157,6 +159,10 @@ The layout can be expressed through clear helper names, sections, framework step
 
 Design the test with runtime evidence in mind. The report should be able to show the meaningful setup, action, and checks without forcing the reviewer or agent to reverse-engineer the test source.
 
+Prefer a little repetition over clever test generation. Tests have more relaxed duplication rules than production code: optimizing away a few repeated setup or assertion lines is usually less important than keeping each behavior easy to read, debug, select, and map to runtime evidence.
+
+Extract shared code when it improves readability or stability, especially when the extracted block is a real behavior or setup concept in the scenario, such as `create active user`, `seed catalog item`, `submit checkout`, or `assert order-created event`. These helpers should keep intent visible at the call site and are good candidates for Allure steps. Be skeptical of helpers that hide the contract, switch behavior through flags, or mainly exist to show off clever deduplication.
+
 ## Parameterized Tests
 
 Parameterized tests are useful when the same behavior contract should be checked across several inputs, variants, boundaries, platforms, locales, feature flags, or data shapes.
@@ -166,6 +172,8 @@ Do not make parameterized tests over-generic. One parameterized test should stil
 Good parameterization keeps the same Given-When-Then shape and the same expected behavior type for every row. If different rows need different setup paths, different actions, or unrelated assertions, split them into separate tests.
 
 Make parameter values readable in the test name, case name, or Allure parameters. Avoid hiding the scenario inside numeric indexes or opaque fixture names.
+
+Use custom test factories or loops only when they make the suite easier to understand and maintain, not simply to optimize repeated test bodies. Prefer framework-native parameterization when each row keeps the same contract and stays readable in the runner and Allure report.
 
 ## Assertion Quality
 
@@ -226,6 +234,7 @@ Treat these as high-risk edits:
 - changing an exact error/status/contract check to a generic success check
 - replacing behavior checks with implementation or mock-call checks
 - skipping, muting, quarantining, or ignoring a failing test
+- hiding a test behind runtime conditional registration, early returns, or custom skip helpers that do not report an explicit skipped or assumed outcome
 - deleting a test or removing it from a suite
 
 These edits are allowed only with explicit rationale:
@@ -244,6 +253,8 @@ Good descriptions are useful even when the test name is clear. They preserve the
 
 Use descriptions to capture intent, bug, requirement, precondition, expected result, or reason the behavior matters. Keep them concise and stable; the description should explain what the test is meant to prove, not narrate implementation details.
 
+Keep descriptions and other per-test intent metadata inline with the test. Do not centralize descriptions, labels, links, parameters, or intent-defining step names in helper wrappers, lookup tables, or mappings keyed by test name. Reusable helpers may handle mechanics, but the contract being proved should remain visible at the test site.
+
 Avoid:
 
 - very long names that hide the actual check
@@ -252,6 +263,7 @@ Avoid:
 - descriptions that disagree with runtime evidence or assertions
 - names shared by nearby tests that cover different scenarios
 - names that claim coverage the assertions do not provide
+- descriptions, labels, links, parameters, or intent-defining step names hidden in centralized mappings instead of being visible near the assertions
 
 ## Setup And Data
 
@@ -274,6 +286,7 @@ Treat these as signs that a test needs review:
 - new test added only to touch code, not prove behavior
 - test combines many unrelated behavior contracts when focused tests would be clearer
 - parameterized test covers unrelated behavior contracts under one generic name
+- loops, factories, dynamic registration, or conditional branches make test intent harder to see than a few explicit tests would be
 - happy-path-only coverage for risky logic
 - missing negative case for validation, permissions, auth, or error handling
 - behavior is only proven with mocks or fakes and no higher-layer smoke covers the real boundary
@@ -288,6 +301,7 @@ Treat these as signs that a test needs review:
 - test only verifies mocks while ignoring externally visible behavior
 - flaky wait, sleep, or timing assumption
 - fixture data is too generic to explain the scenario
+- hard-skipped coverage hidden behind runtime `if` branches, conditional registration, early returns, or custom skip helpers
 - skipped or quarantined test has no owner, reason, issue, or restore path when project policy expects one
 - stale expectation updated to match current output without identifying the source of truth
 
@@ -298,6 +312,7 @@ Treat these as signs that the test suite may not provide a trustworthy quality s
 - no meaningful tests run in CI
 - important tests are excluded from the default local or CI command without a clear reason or replacement signal
 - ignored, skipped, muted, quarantined, or suppressed tests have no clear reasoning
+- tests for unsupported prerequisites or environments are silently unregistered, returned early, or hidden by helpers instead of reported as skipped, assumed, or failed setup
 - CI test jobs run but are allowed to fail while the build is still reported as passing
 - test commands swallow failures, such as wrappers that force a zero exit code without reporting the run as non-gating
 - test results or runtime evidence are not available to show what was executed
@@ -308,6 +323,10 @@ If a test or test job is intentionally non-gating, report that clearly. Do not p
 
 Deleting, skipping, muting, quarantining, xfail-ing, or ignoring a test reduces active coverage unless there is a clear replacement.
 
+Do not hard-skip tests with runtime `if` branches, early returns, conditional test registration, or helper aliases that make missing coverage disappear from the runner and Allure report. Use the test framework's explicit mechanics instead, such as `it.skip`, `it.skipIf`, `assumeThat`, xfail, quarantine, or the project's documented equivalent.
+
+If coverage is expected and a prerequisite is missing, fail setup with a clear error instead of silently skipping the test. If the coverage is intentionally unsupported or temporarily unavailable, declare that explicitly through runner-visible skip or assumption mechanics and include the reason.
+
 Before doing it:
 
 1. Explain why the test is invalid, duplicate, obsolete, or impossible to run now.
@@ -316,7 +335,7 @@ Before doing it:
 4. Add owner, reason, expiry, or restore condition when the project convention supports it.
 5. Validate the affected scope after the change.
 
-Do not hide a real product regression through suppression.
+Do not hide a real product regression or missing environment coverage through suppression.
 
 ## Review Questions
 
@@ -326,6 +345,7 @@ Before accepting a test change, answer:
 - What is the source of truth for that behavior?
 - Is this one behavior contract, or a justified smoke/integration flow?
 - If parameterized, do all cases still prove the same behavior contract?
+- Would this be clearer as explicit boring tests instead of a loop, factory, conditional branch, or generated test matrix?
 - If detailed checks are lower-layer or mocked, is there an appropriate higher-layer smoke signal?
 - Would this test fail if the intended bug or regression existed?
 - Is the assertion specific enough to catch the failure?
@@ -334,6 +354,7 @@ Before accepting a test change, answer:
 - Is the chosen test layer appropriate?
 - Are important negative, edge, or regression cases covered or intentionally out of scope?
 - Are the relevant tests actually run by the expected local or CI command?
+- Are missing prerequisites or unsupported environments represented by explicit skip, assumption, xfail, quarantine, or clear setup failure rather than hidden runtime conditionals?
 - If a CI test job is non-gating, was that limitation reported clearly?
 - Did any assertion, test, or suppression get weaker?
 - If coverage got weaker, what evidence justifies that?
