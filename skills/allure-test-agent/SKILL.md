@@ -54,24 +54,22 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 4. Review runtime artifacts first, then inspect source code only after the run explains what actually executed.
 5. Mark the review incomplete until each scoped group is validated through matched expectations, reviewed observed scope, or explicit broad package-health documentation.
 
-Compact coverage-review pattern when an explicit output path is useful:
+Compact coverage-review pattern:
 
 ```bash
-TMP_DIR="$(mktemp -d)"
-
 npx allure agent \
-  --output "$TMP_DIR/agent-output" \
   <minimal local expectation options when justified> \
   -- npm test -- <scope>
 ```
 
-Before running, decide what should run, what should not run, why that scope is enough, and whether an expectation option would catch a real mistake. Express only justified controls supported by the local Allure agent.
+Before running, decide what should run, what should not run, why that scope is enough, and whether an expectation option would catch a real mistake. Express only justified controls supported by the local Allure agent. Use the CLI-provided temp output by default; locate it from the agent output or a supported helper such as `allure agent state-dir` when available. Add `--output <path>` only when a specific path is needed.
 
 ## Requirements
 
 - Full agent-mode runtime evidence requires Allure CLI `allure@3.11.0` or newer with `allure agent`.
 - Before relying on agent-mode conclusions, confirm the local project wrapper supports `allure agent` and is not below the minimum version. If the wrapper reports an older version, warn the user and treat agent-mode evidence as unavailable or incomplete until the CLI is upgraded.
 - Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed.
+- When using the default output location, get the generated directory from the agent output or a supported helper such as `allure agent state-dir` when available.
 - When choosing a specific output directory, prefer the supported `--output` option. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
 - Agent output, framework Allure results, and generated reports are separate artifacts. Do not use framework result settings such as `ALLURE_RESULTS_DIR` as agent-output controls.
 - Do not add or override framework result directories in an agent command unless the project guide, runner config, installed help, official docs, or adapter README/source confirms it is required for this run. When a per-run result directory is needed, keep its final path component `allure-results` and ensure it is discoverable by the local Allure command.
