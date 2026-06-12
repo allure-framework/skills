@@ -69,6 +69,7 @@ Treat these as signs that test evidence may need to be redesigned:
 - Very long test names. Move intent, context, and expected result into a description or evidence instead.
 - Descriptions that duplicate the test name.
 - No evidence of what was checked, such as reports that show only preparation steps and no executed matchers or assertions.
+- A single manual step that wraps the entire test body only to make Allure evidence non-empty.
 - Step-heavy, screenshot-heavy, or video-heavy reports where volume hides the behavior under test.
 - Same test names for different tests located near each other, such as in the same feature, suite, or file.
 - Overprocessed artifacts that hide the real runtime state.
@@ -90,9 +91,13 @@ Use steps for important runtime actions and behavior boundaries:
 - retries, polling, and waits when timing matters
 - cleanup that affects the scenario or future retries
 
+Do not add a single manual step that wraps an entire test body just to make Allure evidence non-empty. A step should name a meaningful runtime behavior boundary, such as setup, an action, an external call, parsing, command execution, an assertion phase when matcher logging is unavailable, or cleanup.
+
 Step names must be human-readable. Prefer concrete names over generic names with noisy parameters. For example, `open page https://example.org` is often better than `open page` with parameter `page=https://example.org`.
 
 When shared test code is extracted, it is usually most useful when it represents a business-relevant setup, action, assertion, or cleanup block that can be named as a useful step. Small duplication is acceptable in tests; optimize for readable, stable, linear scenarios before optimizing for fewer repeated lines.
+
+For pure function tests, keep the test direct when no meaningful behavior boundary exists. Prefer attaching important inputs and outputs near the function call when they are too large or structured for a readable assertion message. Rely on assertion or matcher logging for checks when the project supports expected/actual reporting, and do not manually create assertion steps that duplicate that signal.
 
 Avoid unnecessary or highly dynamic step parameters. Dynamic values in step parameters can make reports noisy and can reduce retry/history usefulness when they are not important to the behavior.
 
@@ -162,6 +167,8 @@ Prefer instrumenting stable helper boundaries such as API clients, page objects,
 
 Manual runtime API calls are still useful when no integration exists or when a specific artifact matters, but keep them close to the behavior they describe.
 
+Prefer framework assertion or matcher logging over manual assertion steps when the integration can report expected and actual values clearly.
+
 Reusable helpers may handle mechanics, such as attaching an HTTP exchange, redacting a fixture snapshot, recording a command log, or applying a project-standard label that is not test-specific. They should not own the test's intent. Keep the scenario description, issue or requirement links, scenario parameters, behavior labels, and custom step names that define what the test proves inline with the test itself.
 
 ## Parameters
@@ -210,6 +217,8 @@ Do not use descriptions to repeat the test name, narrate implementation steps, p
 
 Good unit-test evidence is usually compact. Prefer the test framework integration for executed expectations, parameters, fixtures, retries, and assertion failures.
 
+For pure function tests, a direct call with clear assertions may be enough. Add attachments for important inputs and outputs when they improve reviewability, but avoid ceremonial wrapper steps that do not reveal a meaningful behavior boundary.
+
 Use steps for:
 
 - meaningful setup, such as constructing a domain object or configuring a fake clock
@@ -239,7 +248,7 @@ expect(total).to.equal(99.00)
 expect(tax breakdown).to match expected values
 ```
 
-Avoid attaching every primitive value or wrapping every assertion by hand. A unit report should explain the behavior and failure without becoming noisier than the source code.
+Avoid attaching every primitive value, wrapping the whole test in one manual step, or wrapping every assertion by hand. A unit report should explain the behavior and failure without becoming noisier than the source code.
 
 ### API / HTTP Tests
 
@@ -405,7 +414,7 @@ For a behavior test, aim for:
 2. A concise description that preserves intent, expected result, risk, or protected regression.
 3. Parameters for the runtime variant, with dynamic non-identity values excluded from history.
 4. Labels and links for stable feature, component, owner, issue, or policy metadata used by the project.
-5. Steps for setup, action, assertion, and meaningful cleanup phases.
+5. Steps for meaningful setup, actions, external calls, parsing, command execution, assertion phases when useful, and cleanup.
 6. Attachments for HTTP exchanges, screenshots, image diffs, Playwright traces, SQL evidence, fixture state, diffs, or logs that preserve relevant runtime state.
 7. Evidence from integrations or helper-boundary instrumentation before manual per-line wrapping.
 
