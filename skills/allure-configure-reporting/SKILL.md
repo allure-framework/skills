@@ -17,6 +17,7 @@ Use the checklist as an advisory scaffold, not a rigid script.
 
 - Prefer local project evidence over generic examples.
 - Do additional local inspection or official documentation research when package names, config APIs, CI syntax, or installed CLI behavior may have changed.
+- Treat package names, action versions, CLI flags, config keys, and environment variables as facts that need a source. Before introducing a new one, confirm it in project-local files, installed command help, official Allure/test-runner docs, or the package README/source.
 - Keep optional surfaces out of scope unless the user asked for them, they are needed for validation, or the project already expects them.
 - Do not claim setup works without either verified emitted Allure results or a clear caveat about what remains unverified.
 
@@ -52,6 +53,7 @@ Think in surfaces. Start with the surface that matches the user's goal, but pref
 - Add or update framework adapter configuration before adding report generation unless the user explicitly asked for a different surface.
 - Keep result paths explicit when the project or integration supports it, using `allure-results` as the stable final directory name.
 - Prefer committed runner or build configuration files over environment variables for stable result paths. Use environment variables mainly for per-run overrides, secrets, CI wiring, or cases where the integration only supports environment configuration.
+- Do not invent environment variables from naming patterns, including plausible-looking names such as `ALLURE_RESULTS_DIR`. If local evidence and current docs do not confirm a variable, mark it unknown or use a documented configuration surface instead.
 - Avoid replacing unrelated reporters or CI steps unless the existing setup requires it.
 - Avoid broad refactors, formatting churn, or new project structure while configuring Allure.
 
@@ -98,10 +100,13 @@ Load only the reference files needed for the current surface:
 Use local files first. Search official Allure docs, official test-runner docs, package README files, and existing project examples when:
 
 - the adapter package, config API, or CLI option may have changed
+- a proposed environment variable, config key, action input, or package name is not already present in the project or installed help
 - CI syntax or action/plugin versions are provider-specific
 - the repo already has partial custom Allure setup
 - validation fails in a way that suggests stale guidance
 - the user asks for the latest or recommended setup
+
+Start with `https://allurereport.org/docs/` for official Allure docs. For adapter setup, use the selected framework's Configuration and Reference pages; many docs pages also expose a `.md` version that is easier to search.
 
 Do not paste a generic snippet without adapting it to the repository's package manager, wrappers, Allure results paths, and CI model.
 

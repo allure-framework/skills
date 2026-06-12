@@ -58,7 +58,7 @@ Document only integrations detected or explicitly configured in this project.
 
 - Existing Allure adapters/integrations: `<fill or unknown>`
 - Runner config files: `<fill or unknown>`
-- Result-path configuration: `<config file, option, property, env var, or unknown>`
+- Result-path configuration: `<confirmed config file, option, property, env var, or unknown>`
 - Supported integration configuration targets: `<specified integration / all discovered / none / unknown>`
 - Validation command for integration setup: `<focused smoke, discovery only, or unknown>`
 - Known unsupported or skipped integrations: `<fill with reasons or unknown>`
@@ -78,7 +78,7 @@ Fill only conventions that exist in this project. Durable test-design rules stay
 ## Run Profiles
 
 Document only profiles that exist in this project. If a profile is inferred rather than confirmed, mark it as inferred.
-Use `allure agent` output defaults in command examples unless an explicit `--output` path is part of the project convention. Include framework result-directory environment variables only when the local adapter needs them.
+Use `allure agent` output defaults in command examples unless an explicit `--output` path is part of the project convention. Include framework result-directory environment variables only when the local adapter needs them and local evidence, installed help, official docs, or package README/source confirms the exact variable name.
 
 | Profile | Command or service intent | Expected use | Confidence limits |
 | --- | --- | --- | --- |
@@ -183,7 +183,7 @@ After each agent-mode run:
 
 Do not create persistent agent output or expectation paths. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. Prefer `--output` for explicit paths.
 
-Allure results paths such as `<parent>/allure-results` are separate reporting configuration and may be stable project paths. Do not use framework result variables such as `ALLURE_RESULTS_DIR` as agent-output controls; document them only when the local adapter requires them, and keep the final directory name `allure-results` when the results must be discovered by Allure.
+Allure results paths such as `<parent>/allure-results` are separate reporting configuration and may be stable project paths. Do not use framework result variables such as `ALLURE_RESULTS_DIR` as agent-output controls; document them only when the local adapter requires them and the exact variable is confirmed, and keep the final directory name `allure-results` when the results must be discovered by Allure.
 
 - Agent output policy: `<CLI-provided temp dir / explicit --output convention / unknown>`
 - Latest output recovery: `<supported command or unknown>`

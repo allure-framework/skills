@@ -23,7 +23,9 @@ Keep the result directory basename stable as `allure-results`. Vary the parent p
 
 This is the recommended convention even when an adapter supports a custom result path. It is also important for `allure run`: by default, `allure run` looks for directories named `allure-results` as a discovery gate so it does not process arbitrary files across the filesystem. If a project wants to use `allure run` with Allure results from a framework adapter, the result directory should be named `allure-results`.
 
-Framework result settings such as `ALLURE_RESULTS_DIR` control where an adapter writes raw results; they do not control `allure agent` output. Do not add them to agent-mode commands unless the integration documents them or the project guide already requires them.
+Documented framework result settings, when supported by a specific adapter, control where that adapter writes raw results; they do not control `allure agent` output. Do not add plausible result-directory variables such as `ALLURE_RESULTS_DIR` to agent-mode commands unless the integration documents them or the project guide already requires them.
+
+Do not infer environment variable names from naming conventions or from another adapter. A result-directory variable is usable only when it appears in the project, installed command help, official Allure or test-runner documentation, or the package README/source for the exact integration in use.
 
 Preferred pattern:
 
@@ -51,6 +53,8 @@ Prefer stable, committed configuration over environment variables:
 - Ruby, PHP, Go, Rust, Dart, Flutter, and other ecosystems: prefer the integration's project config file or runner config when one exists, such as `allure-dart.yml` for Dart-style integrations.
 
 Use environment variables for values that are naturally per-run or sensitive, for CI-provided paths, or when the integration documents environment variables as the only supported configuration mechanism. If using environment variables for a stable path, document why a config file was not used.
+
+When documentation cannot be checked, do not fill the gap with a guessed environment variable. Keep the setting as unknown, choose a documented config file or CLI option, or ask for permission to verify the official docs.
 
 ## Validation Signals
 

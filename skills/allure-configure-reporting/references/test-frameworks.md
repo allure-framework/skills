@@ -59,6 +59,7 @@ Ruby, PHP, Go, Rust, and other ecosystems:
 - Keep result directories explicit when supported, with `allure-results` as the final directory name.
 - Choose the parent directory from the build or runner convention: Maven usually `target`, Gradle usually `build`, JavaScript/TypeScript commonly `out`, and other ecosystems should follow the repository's existing output root.
 - Prefer committed runner/build config over environment variables for stable result paths. Use environment variables for CI-specific or per-run overrides when appropriate.
+- Verify any new environment variable, config key, reporter option, package name, or action input against local evidence, installed help, official docs, or the package README/source before adding it. If it cannot be verified, do not use it.
 - Do not replace project wrappers with direct runner commands unless the wrapper is clearly irrelevant.
 - If the adapter has both runtime APIs and reporter/plugin setup, configure the reporter/plugin first, then add runtime API usage only for requested evidence enrichment.
 
