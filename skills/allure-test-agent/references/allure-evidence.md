@@ -97,7 +97,7 @@ Step names must be human-readable. Prefer concrete names over generic names with
 
 When shared test code is extracted, it is usually most useful when it represents a business-relevant setup, action, assertion, or cleanup block that can be named as a useful step. Small duplication is acceptable in tests; optimize for readable, stable, linear scenarios before optimizing for fewer repeated lines.
 
-For pure function tests, keep the test direct when no meaningful behavior boundary exists. Prefer attaching important inputs and outputs near the function call when they are too large or structured for a readable assertion message. Rely on assertion or matcher logging for checks when the project supports expected/actual reporting, and do not manually create assertion steps that duplicate that signal.
+For pure function tests, the function call under test is often the meaningful behavior boundary. When adding input and output evidence around a pure function call, make the action itself visible as a real step, such as `parse test plan`: attach the input inside the step, call the function, attach the result, and return it for normal assertions. Rely on assertion or matcher logging for checks when the project supports expected/actual reporting, and do not manually create assertion steps that duplicate that signal.
 
 Avoid unnecessary or highly dynamic step parameters. Dynamic values in step parameters can make reports noisy and can reduce retry/history usefulness when they are not important to the behavior.
 
@@ -217,7 +217,7 @@ Do not use descriptions to repeat the test name, narrate implementation steps, p
 
 Good unit-test evidence is usually compact. Prefer the test framework integration for executed expectations, parameters, fixtures, retries, and assertion failures.
 
-For pure function tests, a direct call with clear assertions may be enough. Add attachments for important inputs and outputs when they improve reviewability, but avoid ceremonial wrapper steps that do not reveal a meaningful behavior boundary.
+For pure function tests, a direct call with clear assertions may be enough. When attachments for important inputs and outputs improve reviewability, put them inside a step that names the behavior under test, such as `parse test plan`, so the report shows the action that produced the output. Avoid ceremonial wrapper steps that do not reveal a meaningful behavior boundary.
 
 Use steps for:
 
