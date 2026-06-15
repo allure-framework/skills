@@ -8,7 +8,7 @@ This file is project-specific guidance. Durable test-design, expectation, and ev
 
 Runtime first, source second.
 
-- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through the local agent test service when available, or through `allure agent` otherwise.
+- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`.
 - Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
 - Only skip agent mode when it is impossible or when debugging agent mode itself.
 - If agent output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
@@ -27,22 +27,7 @@ Do not store the exact Allure version here. Version output is a runtime fact; th
 - Expectation controls: `<fill supported options, command goal controls, file format, or unknown>`
 - Latest/state directory recovery: `<supported / unsupported / unknown>`
 - Selection/rerun support: `<supported / unsupported / unknown>`
-- Discovery/configuration commands: `<supported / unsupported / unknown>`
-- Local agent test service: `<start command, endpoint, unsupported, or unknown>`
-
-## Local Agent Test Service
-
-Use the local agent test service when the project provides one and the task is query-heavy, stateful, or iterative. Use `allure agent` directly when service mode is unavailable or unnecessary.
-
-- Service status: `<supported / unsupported / unknown>`
-- Start or connect command: `<fill when project-approved, otherwise unknown>`
-- Capability/status endpoint: `<fill or unknown>`
-- Supported intents: `<run one test/file/label/profile/rerun/query/unknown>`
-- Supported profiles and selectors: `<fill or unknown>`
-- Query support: `<runs/tests/findings/events/attachments/evidence/unknown>`
-- Realtime and cancellation support: `<supported / unsupported / unknown>`
-- Service logs or diagnostics: `<path or unknown>`
-- Fallback when unavailable: `<wrapper> agent -- <command>` or `<fill local fallback>`
+- Capability/helper commands: `<capabilities/latest/query/select/state-dir support or unknown>`
 
 ## Local Test Surfaces
 
@@ -82,7 +67,7 @@ Fill only conventions that exist in this project. Durable test-design rules stay
 Document only profiles that exist in this project. If a profile is inferred rather than confirmed, mark it as inferred.
 Use `allure agent` output defaults in command examples unless an explicit `--output` path is part of the project convention. Include framework result-directory environment variables only when the local adapter needs them and local evidence, installed help, official docs, or package README/source confirms the exact variable name.
 
-| Profile | Command or service intent | Expected use | Confidence limits |
+| Profile | Command or profile intent | Expected use | Confidence limits |
 | --- | --- | --- | --- |
 | smoke | `<fill>` | Quick signal for critical paths | Does not prove full coverage |
 | affected | `<fill>` | Changes mapped to likely tests | Mapping may miss indirect impact |
@@ -137,7 +122,7 @@ Treat the run goal as a claim boundary for review, not as proof. If the goal is 
 
 1. Identify the exact review scope and validation depth.
 2. Create the smallest meaningful expectations using local supported controls when they protect the review conclusion.
-3. Run only that scope through the local agent test service or `allure agent`.
+3. Run only that scope through `allure agent`.
 4. Print the run's `index.md` path.
 5. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown.
 6. Inspect source code only after runtime evidence explains what executed.
