@@ -106,7 +106,13 @@ Use local files first. Search official Allure docs, official test-runner docs, p
 - validation fails in a way that suggests stale guidance
 - the user asks for the latest or recommended setup
 
-Start with `https://allurereport.org/docs/` for official Allure docs. For adapter setup, use the selected framework's Configuration and Reference pages; many docs pages also expose a `.md` version that is easier to search.
+Use official Allure docs by discovery, not guessed slugs:
+
+1. Open `https://allurereport.org/docs/`, its Markdown index at `https://allurereport.org/docs.md`, or the site's built-in search.
+2. Find the integration by its visible Frameworks navigation label or exact docs search result, then follow the actual links for Getting started, Configuration, and Reference pages.
+3. If a page returns 404, stop using that URL and return to the docs index/search. Do not keep probing plausible paths derived from the framework name.
+4. Before using a fact from a docs page, verify the page title and body match the selected runner/integration and expose the needed package name, reporter/plugin/listener name, config key, CLI flag, or environment variable.
+5. If official docs are unavailable but local files, installed help, package metadata, or the skill references are enough to make a minimal verified change, proceed and document the docs lookup caveat. If they are not enough, stop with the missing fact instead of guessing.
 
 Do not paste a generic snippet without adapting it to the repository's package manager, wrappers, Allure results paths, and CI model.
 
