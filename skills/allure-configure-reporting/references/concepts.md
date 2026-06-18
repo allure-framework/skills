@@ -6,6 +6,7 @@ Use this reference when the task needs Allure terminology, result/report boundar
 
 - Adapter or integration: the test-runner-specific code that observes tests and writes Allure result data.
 - Allure results: raw machine-readable results emitted by a test framework adapter. Many adapters can write to arbitrary paths, but this skill guides projects toward `allure-results` as the stable final directory name, with the parent chosen from the build system or test tool convention.
+- Allure dump or run data: portable data produced by supported Allure CLI wrapping or aggregation flows. Local runs or CI can retain it so agents or humans can inspect execution later.
 - Allure report: generated report files rendered from Allure results. Report generation is downstream from result emission.
 - Agent output: files generated for an agent-mode run, such as `index.md`, manifests, findings, and per-test markdown. Agent output is separate from Allure results and Allure report files.
 - CLI or tool installation: the project-approved way to run Allure commands. It may be a local package, build plugin, standalone binary, Docker image, CI action, or wrapper.
@@ -64,6 +65,7 @@ A useful validation checks more than file existence:
 - status, name, timing, and suite or package data are plausible
 - configured labels, parameters, steps, or attachments appear when the task involved them
 - generated Allure reports or CI artifacts consume the same Allure results path that the test run writes
+- retained local or CI results or dump artifacts can be consumed by `allure agent inspect` when the installed CLI supports that workflow
 
 If the test command fails but Allure results are produced, report both facts. The reporting integration may be working while the product or tests are failing.
 

@@ -45,7 +45,7 @@ Important: the test command wrapped by `allure run` must emit Allure results int
     path: <dump-output-path>
 ```
 
-In a final job, download each artifact, aggregate or generate the Allure report with the project-approved Allure command, then upload or publish the report according to the repository's CI policy. If the artifact contains Allure results rather than CLI dump data, keep the internal result directory named `allure-results`.
+In a final job, download each artifact, aggregate or generate the Allure report with the project-approved Allure command, then upload or publish the report according to the repository's CI policy. If the artifact contains Allure results rather than CLI dump data, keep the internal result directory named `allure-results`. When the installed CLI supports `allure agent inspect`, agents can inspect retained local results or downloaded CI results/dumps later and produce an agent-readable review without parsing raw logs or generated HTML first.
 
 Prefer this pattern when:
 

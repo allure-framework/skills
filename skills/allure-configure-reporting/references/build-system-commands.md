@@ -10,6 +10,8 @@ Useful commands often cover:
 
 - running tests with the configured Allure results path
 - generating an Allure report from an existing Allure results path
+- inspecting existing Allure results or dump artifacts with agent output when the installed CLI supports `allure agent inspect`
+- generating agent output from existing results with a temporary agent-only Allure config when `agent inspect` cannot consume the artifact shape
 - opening or serving a generated Allure report locally
 - cleaning generated Allure report output when the project already has clean conventions
 - wrapping a test command with Allure tooling when the installed CLI supports that pattern
@@ -30,8 +32,9 @@ Avoid creating multiple overlapping names in the first pass.
 - Keep the test command as the source of truth when possible.
 - Use the same `allure-results` directory that the framework adapter writes.
 - Separate test execution from Allure report generation unless the user wants a combined convenience command.
+- For generated-config fallbacks, enable only the `agent` plugin and keep the config temporary unless the project already has a documented convention.
 - Preserve existing environment setup and wrappers.
-- Verify installed CLI flags before adding newer commands such as run wrappers, dump output, or aggregation.
+- Verify installed CLI flags before adding newer commands such as run wrappers, dump output, `agent inspect`, `--report` modes, or aggregation.
 
 ## Validation
 

@@ -1,6 +1,6 @@
 ---
 name: allure-test-agent
-description: Write, review, debug, and improve tests with Allure agent mode by preserving useful coverage, planning scope, creating per-run expectations, running targeted tests, reviewing runtime evidence, and enriching weak test evidence.
+description: Write, review, debug, and improve tests with Allure agent mode by preserving useful coverage, planning scope, creating per-run expectations, running targeted tests, inspecting existing Allure results or dumps from local or CI runs, reviewing runtime evidence, and enriching weak test evidence.
 ---
 
 # Allure Test Agent
@@ -17,6 +17,8 @@ If the project has `docs/allure-test-agent.md`, read it before writing or review
 
 If it does not, use the guidance in this skill and suggest using `$allure-configure-agent-workflow` later.
 
+Read `references/agent-mode.md` before setting up or troubleshooting agent-mode execution, inspecting existing local or CI Allure results/dumps, or changing output, state, rerun, capability-discovery, or reporting-boundary guidance.
+
 Read `references/test-design.md` before adding, changing, deleting, skipping, suppressing, or reviewing tests.
 
 Read `references/allure-evidence.md` before adding, reviewing, or fixing Allure steps, attachments, parameters, labels, descriptions, or weak evidence findings.
@@ -28,13 +30,15 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 1. Understand the feature, issue, or review goal and decide the intended test scope.
 2. Decide whether expectation controls reduce a real risk for this run. When they do, create the smallest fresh expectations supported by the local Allure agent.
 3. Write or update the tests using test-design rules, or keep the current tests unchanged if the task is review-only.
-4. Run only the intended scope with `allure agent` before relying on raw console output.
-5. Print the run's `index.md` path from the output directory so collaborators can open the run overview quickly.
-6. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and the relevant test markdown files before inspecting source code.
-7. If evidence is weak, enrich the tests with real steps, attachments, or minimal metadata.
-8. Confirm the run is a trustworthy signal: the selected profile fits the goal, important tests are not silently excluded, and any non-gating local or CI signal is called out.
-9. Rerun with a fresh agent output directory and fresh expectations when expectation controls are still justified for the same intended scope. Use the CLI-provided temp output unless a specific path is needed.
-10. Accept only when scope matches, coverage remains meaningful, evidence is good enough to review, execution limitations are explicit, and any partial runtime modeling has been called out.
+4. When executing tests yourself, run only the intended scope with `allure agent` before relying on raw console output.
+5. When investigating an execution that already emitted raw Allure results or dump artifacts, prefer a locally confirmed `allure agent inspect` flow to create agent-readable output from those artifacts before parsing raw logs or generated HTML reports.
+6. For iterative agent-only loops, prefer `--report off` when supported. For a final validation or user-facing review run, prefer `--report auto` or force the appropriate human report mode, then print the generated report path when one exists.
+7. Print the run or inspected output's `index.md` path so collaborators can open the overview quickly.
+8. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and the relevant test markdown files before inspecting source code.
+9. If evidence is weak, enrich the tests with real steps, attachments, or minimal metadata.
+10. Confirm the run is a trustworthy signal: the selected profile fits the goal, important tests are not silently excluded, and any non-gating local or CI signal is called out.
+11. Rerun with a fresh agent output directory and fresh expectations when expectation controls are still justified for the same intended scope. Use the CLI-provided temp output unless a specific path is needed.
+12. Accept only when scope matches, coverage remains meaningful, evidence is good enough to review, execution limitations are explicit, and any partial runtime modeling has been called out.
 
 ## Review Variants
 
@@ -58,6 +62,7 @@ Compact coverage-review pattern:
 
 ```bash
 npx allure agent \
+  <report mode: --report off for iterative loops, auto/awesome/config for final runs> \
   <minimal local expectation options when justified> \
   -- npm test -- <scope>
 ```
@@ -68,15 +73,21 @@ Before running, decide what should run, what should not run, why that scope is e
 
 - Full agent-mode runtime evidence requires Allure CLI `allure@3.11.0` or newer with `allure agent`.
 - Before relying on agent-mode conclusions, confirm the local project wrapper supports `allure agent` and is not below the minimum version. If the wrapper reports an older version, warn the user and treat agent-mode evidence as unavailable or incomplete until the CLI is upgraded.
-- Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed.
+- Existing-result inspection requires local `allure agent inspect` support, available in `allure@3.12.0` and newer. Confirm it through the project wrapper with `allure agent capabilities --json` and `allure agent inspect --help`.
+- Use `allure agent inspect [<allure-results-dir-or-glob> ...]` for local or downloaded `allure-results` directories, and repeated `--dump <archive-or-glob>` for dump archives created by `allure run --dump`.
+- Use `--report auto|off|awesome|config` when controlling the optional human report. The default `auto` mode may write `awesome/index.html` and `manifest/human-report.json` inside the agent output when the stored result count is within the local CLI threshold.
+- Use `--report off` for private iterative loops unless the user needs a browser-ready report for that run. For final validation or handoff runs, prefer `--report auto`; use `--report awesome` to force the single-file Awesome report, or `--report config` when the project-configured report plugins should run.
+- When `allure agent inspect` is unavailable or cannot consume the artifact shape, prefer an advanced fallback that generates a temporary Allure config enabling only the `agent` plugin, then run `allure generate --config <generated-config> --output <agent-output> <results...>` with repeated `--dump <archive-or-glob>` as needed. Treat that explicit `<agent-output>` as caller-managed cleanup.
+- If neither `agent inspect` nor the generated agent-only config fallback is usable, inspect raw Allure results, dump contents, or logs only as a weaker fallback. `allure log <allure-results>` is a local console fallback for result folders when supported, but it is not agent output.
+- Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. In `allure@3.12.0` and newer, CLI-provided agent output is cleaned automatically by agent-mode lifecycle handling.
 - When using the default output location, get the generated directory from the agent output or a supported helper such as `allure agent latest` when available.
-- When choosing a specific output directory, prefer the supported `--output` option. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
+- When choosing a specific output directory, prefer the supported `--output` option. Explicit output is caller-managed: remove or archive it yourself when it is no longer needed, because automatic agent cleanup does not remove caller-provided output paths. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
 - Agent output, framework Allure results, and generated reports are separate artifacts. Do not use framework result settings such as `ALLURE_RESULTS_DIR` as agent-output controls.
 - Do not add or override framework result directories in an agent command unless the project guide, runner config, installed help, official docs, or adapter README/source confirms it is required for this run. When a per-run result directory is needed, keep its final path component `allure-results` and ensure it is discoverable by the local Allure command.
 - Never invent Allure environment variables from plausible names. If the exact variable or flag is not confirmed, use the documented `allure agent` option, leave the setting unknown, or ask to verify official docs.
 - Runs that use expectations must use fresh expectations for the intended scope.
 - Parallel runs must never share output paths or expectation state.
-- After each agent-mode test run, print the `index.md` path from that run's output directory.
+- After each agent-mode test run, print the `index.md` path from that run's output directory. When a final run generates a human report, also print the report path recorded in `manifest/human-report.json`.
 - Inspect `allure agent --help` before assuming specific expectation option names. Prefer inline options; use file-based expectations only as advanced mode for large, generated, or policy-controlled contracts.
 - Do not add expectation flags defensively. If expectation controls are unavailable or not justified, review observed scope from the output and call out weaker scope checking.
 - If a run, local command, or CI job is non-gating or excludes important tests by default, call that out before using it as proof.
@@ -100,6 +111,7 @@ Before running, decide what should run, what should not run, why that scope is e
 
 ## Reference Files
 
+- Agent mode operating model: `references/agent-mode.md`
 - Test design guide: `references/test-design.md`
 - Allure evidence guide: `references/allure-evidence.md`
 - Expectations guide: `references/expectations.md`
