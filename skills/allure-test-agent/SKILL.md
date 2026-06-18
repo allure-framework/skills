@@ -17,8 +17,6 @@ If the project has `docs/allure-test-agent.md`, read it before writing or review
 
 If it does not, use the guidance in this skill and suggest using `$allure-configure-agent-workflow` later.
 
-Read `references/agent-mode.md` before setting up or troubleshooting agent-mode execution, inspecting existing local or CI Allure results/dumps, or changing output, state, rerun, capability-discovery, or reporting-boundary guidance.
-
 Read `references/test-design.md` before adding, changing, deleting, skipping, suppressing, or reviewing tests.
 
 Read `references/allure-evidence.md` before adding, reviewing, or fixing Allure steps, attachments, parameters, labels, descriptions, or weak evidence findings.
@@ -111,7 +109,6 @@ Before running, decide what should run, what should not run, why that scope is e
 
 ## Reference Files
 
-- Agent mode operating model: `references/agent-mode.md`
 - Test design guide: `references/test-design.md`
 - Allure evidence guide: `references/allure-evidence.md`
 - Expectations guide: `references/expectations.md`

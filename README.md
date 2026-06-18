@@ -169,7 +169,6 @@ skills/
     CLAUDE.md
     agents/openai.yaml
     references/
-      agent-mode.md
       allure-evidence.md
       expectations.md
       test-design.md
