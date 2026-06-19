@@ -2,7 +2,7 @@
 
 Use Allure agent mode to design, review, validate, debug, and enrich tests in this project.
 
-This file is project-specific guidance. Durable agent-mode, test-design, expectation, and evidence rules live in the `allure-test-agent` skill. If the skill is available, use it together with this file. If the skill is unavailable, follow this file as the local fallback and keep conclusions conservative.
+This file is project-specific guidance. Durable agent-mode, test-design, expectation, and evidence rules live in the `allure-agent-mode` skill. If the skill is available, use it together with this file. If the skill is unavailable, follow this file as the local fallback and keep conclusions conservative.
 
 ## Review Principle
 
@@ -54,7 +54,7 @@ Document only integrations detected or explicitly configured in this project.
 
 ## Project Test-Design Conventions
 
-Fill only conventions that exist in this project. Durable test-design rules stay in the `allure-test-agent` skill.
+Fill only conventions that exist in this project. Durable test-design rules stay in the `allure-agent-mode` skill.
 
 - Accepted test layers: `<unit/component/integration/API/browser/CLI/etc. or unknown>`
 - Preferred assertion style: `<framework matchers, custom assertions, deep-match messages, or unknown>`
@@ -153,7 +153,7 @@ Use this when a local command, CI, or another pipeline has already produced raw 
 ### Test Authoring Loop
 
 1. Understand the feature, issue, expected behavior, and risk.
-2. Read the `allure-test-agent` skill's test-design guidance when available.
+2. Read the `allure-agent-mode` skill's test-design guidance when available.
 3. Create the smallest meaningful expectations for the intended scope when they reduce a real validation risk.
 4. Write or update focused tests without weakening useful coverage.
 5. Run the intended scope through agent mode.

@@ -1,0 +1,7 @@
+interface:
+  display_name: "Allure Agent Mode"
+  short_description: "Write, review, debug, and improve tests safely"
+  default_prompt: "Use $allure-agent-mode to write, review, debug, or improve tests while preserving useful coverage and Allure evidence."
+
+policy:
+  allow_implicit_invocation: true

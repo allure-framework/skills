@@ -1,9 +1,9 @@
 ---
-name: allure-test-agent
+name: allure-agent-mode
 description: Write, review, debug, and improve tests with Allure agent mode by preserving useful coverage, planning scope, creating per-run expectations, running targeted tests, inspecting existing Allure results or dumps from local or CI runs, reviewing runtime evidence, and enriching weak test evidence.
 ---
 
-# Allure Test Agent
+# Allure Agent Mode
 
 Use this skill for feature or bug work that changes tests, for reviewing existing tests, auditing coverage, triaging failing suites, investigating weak evidence, or debugging flaky and environment-sensitive failures.
 

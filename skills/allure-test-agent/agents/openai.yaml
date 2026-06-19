@@ -1,7 +1,0 @@
-interface:
-  display_name: "Allure Test Agent"
-  short_description: "Write, review, debug, and improve tests without weakening useful coverage"
-  default_prompt: "Use $allure-test-agent to write, review, debug, or improve tests while preserving useful coverage and Allure evidence."
-
-policy:
-  allow_implicit_invocation: true

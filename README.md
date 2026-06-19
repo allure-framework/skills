@@ -54,9 +54,9 @@ The goal is not to make agents run more commands. The goal is to make test-relat
 | --- | --- | --- |
 | `allure-configure-reporting` | Configuring Allure adapters, report commands, rich evidence, and CI report or artifact handling. | A working or clearly bounded Allure reporting setup with validation notes. |
 | `allure-configure-agent-workflow` | Configuring AI-agent workflow guidance for Allure test work in a repository. | Root agent router files and `docs/allure-agent-mode.md` in the target project. |
-| `allure-test-agent` | Writing, reviewing, debugging, enriching, and maintaining tests through Allure agent mode. | Better test changes, better runtime evidence, and more trustworthy validation conclusions. |
+| `allure-agent-mode` | Writing, reviewing, debugging, enriching, and maintaining tests through Allure agent mode. | Better test changes, better runtime evidence, and more trustworthy validation conclusions. |
 
-Use `allure-configure-reporting` when a project needs reporting configured, use `allure-configure-agent-workflow` once per project to record local agent workflow guidance, then use `allure-test-agent` for normal test work.
+Use `allure-configure-reporting` when a project needs reporting configured, use `allure-configure-agent-workflow` once per project to record local agent workflow guidance, then use `allure-agent-mode` for normal test work.
 
 ## What The Skills Do
 
@@ -77,7 +77,7 @@ Use `allure-configure-reporting` when a project needs reporting configured, use 
 
 The workflow configuration skill does not try to turn every repository into the same shape. It records the local shape so later agents stop rediscovering it.
 
-`allure-test-agent` guides day-to-day test work:
+`allure-agent-mode` guides day-to-day test work:
 
 - choose meaningful test scope before running
 - avoid weakening assertions just to make a command pass
@@ -128,7 +128,7 @@ npx -y skills add allure-framework/skills --agent cursor --skill '*' --yes --ful
 Install a single skill:
 
 ```bash
-npx -y skills add allure-framework/skills --agent codex --skill allure-test-agent --yes --full-depth
+npx -y skills add allure-framework/skills --agent codex --skill allure-agent-mode --yes --full-depth
 ```
 
 By default, `skills add` installs at project scope when run inside a project. Add `--global` to install for the current user instead:
@@ -164,7 +164,7 @@ skills/
     references/
       project-guide-template.md
       root-agent-entry-snippet.md
-  allure-test-agent/
+  allure-agent-mode/
     SKILL.md
     CLAUDE.md
     agents/openai.yaml

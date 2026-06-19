@@ -9,7 +9,7 @@ description: Configure Allure reporting in existing projects by selecting test f
 
 Use this skill when the primary goal is to make Allure reporting work in an existing project. Leave the project with the smallest idiomatic change that emits Allure results, generates or serves an Allure report, preserves or publishes CI artifacts, or adds the requested evidence integration, plus a clear validation summary.
 
-If the goal is AI/coding-agent workflow guidance after reporting is configured, use `allure-configure-agent-workflow`. If the goal is writing, reviewing, debugging, or enriching tests through Allure agent mode, use `allure-test-agent`.
+If the goal is AI/coding-agent workflow guidance after reporting is configured, use `allure-configure-agent-workflow`. If the goal is writing, reviewing, debugging, or enriching tests through Allure agent mode, use `allure-agent-mode`.
 
 ## Operating Style
 

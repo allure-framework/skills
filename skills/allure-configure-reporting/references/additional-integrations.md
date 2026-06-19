@@ -2,7 +2,7 @@
 
 Use this reference when the task is to configure integrations beyond basic test framework result emission, such as matchers, HTTP capture, browser artifacts, screenshots, traces, image diffs, logs, labels, or attachment helpers.
 
-This file is about whether and how to configure an integration. Detailed evidence quality rules belong to the `allure-test-agent` skill, especially `references/allure-evidence.md`, when that skill is available.
+This file is about whether and how to configure an integration. Detailed evidence quality rules belong to the `allure-agent-mode` skill, especially `references/allure-evidence.md`, when that skill is available.
 
 ## Selection Rule
 
@@ -47,7 +47,7 @@ Ask before configuring when:
 - Prefer configuration-level integration over wrapping many tests manually.
 - Configure at stable helper boundaries, such as HTTP clients, page objects, assertion setup, fixture setup, or runner config.
 - Preserve project naming, redaction, artifact retention, and CI conventions.
-- Avoid creating a parallel evidence taxonomy. If the project needs evidence-quality decisions, use `allure-test-agent` and its evidence guide.
+- Avoid creating a parallel evidence taxonomy. If the project needs evidence-quality decisions, use `allure-agent-mode` and its evidence guide.
 
 ## Validation
 
