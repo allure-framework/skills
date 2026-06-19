@@ -1,6 +1,6 @@
 ---
 name: allure-configure-agent-workflow
-description: Configure project guidance for AI/coding agents to use Allure agent mode during test work by detecting local test commands, Allure capabilities, result paths, and evidence conventions, then creating short root agent routers plus docs/allure-test-agent.md. Use when the goal is agent workflow guidance, evidence review workflow, expectations, and project-specific test-work instructions; not when the primary goal is installing Allure adapters, making tests emit results, adding report scripts, or configuring CI publishing.
+description: Configure project guidance for AI/coding agents to use Allure agent mode during test work by detecting local test commands, Allure capabilities, result paths, and evidence conventions, then creating short root agent routers plus docs/allure-agent-mode.md. Use when the goal is agent workflow guidance, evidence review workflow, expectations, and project-specific test-work instructions; not when the primary goal is installing Allure adapters, making tests emit results, adding report scripts, or configuring CI publishing.
 ---
 
 # Configure Allure Agent Workflow
@@ -17,8 +17,8 @@ If the primary goal is to install framework adapters, make tests emit Allure res
 
 Leave the project with:
 
-- root agent entry-file router guidance, such as `AGENTS.md`, `CLAUDE.md`, or other project-specific agent instruction files, that points test work to `docs/allure-test-agent.md`
-- a project `docs/allure-test-agent.md` guide with local wrappers, capabilities, Allure integrations, test-design conventions, run profiles, expectation controls, local/CI existing-result or dump inspection support, human-report mode policy, output/state policy, execution-signal notes, metadata conventions, and evidence conventions
+- root agent entry-file router guidance, such as `AGENTS.md`, `CLAUDE.md`, or other project-specific agent instruction files, that points test work to `docs/allure-agent-mode.md`
+- a project `docs/allure-agent-mode.md` guide with local wrappers, capabilities, Allure integrations, test-design conventions, run profiles, expectation controls, local/CI existing-result or dump inspection support, human-report mode policy, output/state policy, execution-signal notes, metadata conventions, and evidence conventions
 - enough Allure bootstrap guidance for the agent to continue, even if the project is not fully configured yet
 
 ## Workflow
@@ -28,9 +28,9 @@ Leave the project with:
 3. Inspect the current local Allure CLI capabilities with the project wrapper, `allure --version`, `allure agent --help`, and `allure agent capabilities --json` before writing supported commands or flags into project guidance. If existing-result or dump review is in scope, also check `allure agent inspect --help` when the wrapper exposes it. If the detected Allure CLI version is lower than `3.11.0`, warn the user that the full agent-mode runtime-evidence workflow requires `allure@3.11.0` or newer and mark agent execution as unsupported or limited. If existing-result inspection is in scope and the detected CLI is lower than `3.12.0` or lacks `agent inspect`, mark inspect as unsupported or limited. Use version checks only to confirm support and warn on old CLIs; do not write the exact detected Allure version into project docs.
 4. Discover or document local test facts: test frameworks, wrappers, test roots, Allure integrations, Allure results paths, run profiles, supported selectors, expectation controls, output/state/rerun behavior, existing-result or dump inspection support, metadata conventions, evidence conventions, and CI/default-command execution signal when visible. Keep agent output, framework Allure results, dump artifacts, and generated reports distinct.
 5. Treat command flags, config keys, and environment variables as supported only after local evidence, installed help, official Allure/test-runner docs, or package README/source confirms them. If they cannot be confirmed, write `unknown` instead of guessing.
-6. If this skill is being used after `allure-configure-reporting` changed reporting configuration, refresh any stale local wrappers, test commands, Allure results paths, integrations, CI artifacts, run profiles, and evidence conventions in `docs/allure-test-agent.md`.
-7. Create or update relevant root agent entry files so test-related work points to `docs/allure-test-agent.md`. Use existing project conventions first, such as `AGENTS.md`, `CLAUDE.md`, or other model-specific instruction files. If none exist, create `AGENTS.md` as the default Codex-friendly router and keep the snippet easy to copy into other entry files.
-8. Create `docs/allure-test-agent.md` from the bundled template and adapt only the parts that must be project-specific.
+6. If this skill is being used after `allure-configure-reporting` changed reporting configuration, refresh any stale local wrappers, test commands, Allure results paths, integrations, CI artifacts, run profiles, and evidence conventions in `docs/allure-agent-mode.md`.
+7. Create or update relevant root agent entry files so test-related work points to `docs/allure-agent-mode.md`. Use existing project conventions first, such as `AGENTS.md`, `CLAUDE.md`, or other model-specific instruction files. If none exist, create `AGENTS.md` as the default Codex-friendly router and keep the snippet easy to copy into other entry files.
+8. Create `docs/allure-agent-mode.md` from the bundled template and adapt only the parts that must be project-specific.
 9. Keep helper-command descriptions short and practical. Put exact commands and supported flags in the generated project guide only after confirming them in the local environment.
 10. Keep changes minimal and additive. Preserve unrelated project guidance in every entry file you touch.
 

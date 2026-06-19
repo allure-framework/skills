@@ -13,7 +13,7 @@ Use this skill for feature or bug work that changes tests, for reviewing existin
 
 ## Read First
 
-If the project has `docs/allure-test-agent.md`, read it before writing or reviewing tests.
+If the project has `docs/allure-agent-mode.md`, read it before writing or reviewing tests.
 
 If it does not, use the guidance in this skill and suggest using `$allure-configure-agent-workflow` later.
 

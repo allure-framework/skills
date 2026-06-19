@@ -69,7 +69,7 @@ Think in surfaces. Start with the surface that matches the user's goal, but pref
 
 - Summarize configured surfaces, changed files, validation command, Allure results path, and remaining unknowns.
 - Mention whether Allure results emission, Allure report generation, CI artifact handling, or evidence enrichment was verified.
-- If the project has `docs/allure-test-agent.md`, update it when reporting changes affect local wrappers, test commands, Allure results paths, integrations, CI artifacts, run profiles, or evidence conventions.
+- If the project has `docs/allure-agent-mode.md`, update it when reporting changes affect local wrappers, test commands, Allure results paths, integrations, CI artifacts, run profiles, or evidence conventions.
 - If the project does not have agent workflow guidance, suggest `allure-configure-agent-workflow` only after reporting works or the missing reporting pieces are clearly documented.
 
 ## Stop And Ask

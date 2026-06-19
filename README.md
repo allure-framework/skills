@@ -53,7 +53,7 @@ The goal is not to make agents run more commands. The goal is to make test-relat
 | Skill | Use it for | Main output |
 | --- | --- | --- |
 | `allure-configure-reporting` | Configuring Allure adapters, report commands, rich evidence, and CI report or artifact handling. | A working or clearly bounded Allure reporting setup with validation notes. |
-| `allure-configure-agent-workflow` | Configuring AI-agent workflow guidance for Allure test work in a repository. | Root agent router files and `docs/allure-test-agent.md` in the target project. |
+| `allure-configure-agent-workflow` | Configuring AI-agent workflow guidance for Allure test work in a repository. | Root agent router files and `docs/allure-agent-mode.md` in the target project. |
 | `allure-test-agent` | Writing, reviewing, debugging, enriching, and maintaining tests through Allure agent mode. | Better test changes, better runtime evidence, and more trustworthy validation conclusions. |
 
 Use `allure-configure-reporting` when a project needs reporting configured, use `allure-configure-agent-workflow` once per project to record local agent workflow guidance, then use `allure-test-agent` for normal test work.
@@ -72,7 +72,7 @@ Use `allure-configure-reporting` when a project needs reporting configured, use 
 - detecting local Allure and test-runner facts
 - checking the local Allure wrapper, `allure --version`, and `allure agent --help`
 - creating or updating short root agent entry files that route test work to the project guide
-- creating `docs/allure-test-agent.md` with local commands, capabilities, run profiles, output policy, evidence conventions, expectation controls, and known unknowns
+- creating `docs/allure-agent-mode.md` with local commands, capabilities, run profiles, output policy, evidence conventions, expectation controls, and known unknowns
 - avoiding exact stored Allure versions so generated project guidance does not go stale immediately
 
 The workflow configuration skill does not try to turn every repository into the same shape. It records the local shape so later agents stop rediscovering it.

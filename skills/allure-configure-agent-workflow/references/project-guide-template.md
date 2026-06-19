@@ -1,4 +1,4 @@
-# Allure Test Agent
+# Allure Agent Mode
 
 Use Allure agent mode to design, review, validate, debug, and enrich tests in this project.
 
