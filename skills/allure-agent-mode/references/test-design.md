@@ -33,6 +33,7 @@ Agents must not delete, relax, invert, skip, or replace assertions just to make 
 - [Parameterized Tests](#parameterized-tests)
 - [Assertion Quality](#assertion-quality)
 - [Fixing Failing Tests](#fixing-failing-tests)
+- [Handling Flaky Tests](#handling-flaky-tests)
 - [Coverage Quality Smells](#coverage-quality-smells)
 - [Suite Execution Smells](#suite-execution-smells)
 - [Deleting, Skipping, Or Suppressing Tests](#deleting-skipping-or-suppressing-tests)
@@ -59,6 +60,8 @@ Treat execution as part of test design. A good test that is excluded by default,
 - New tests should prove behavior that matters, not merely execute code.
 - When practical, a new or changed regression test should fail for the intended bug before the fix and pass after the fix.
 - If expected behavior is unclear, report uncertainty instead of inventing a weaker expectation.
+- Use fixtures, factories, or controlled test data. Do not depend on production data, live customer records, or other uncontrolled external state.
+- Each test must be independently runnable. Do not rely on execution order, shared mutable state across tests, or leftovers from a previous test.
 
 ## Expected Behavior Sources
 
@@ -221,6 +224,16 @@ Possible classifications:
 - weak test: the test runs but does not prove the stated behavior
 
 Do not solve an unclassified failure by weakening the assertion.
+
+## Handling Flaky Tests
+
+When a failure is classified as flaky behavior:
+
+1. Rerun the narrowest scoped command through Allure agent mode before changing product code or weakening assertions.
+2. Check ordering dependencies, shared mutable state, wall-clock timing, async completion, retries, and environment variance.
+3. Fix the root cause when possible: stable waits, isolated fixtures, deterministic data, proper cleanup, or removing hidden coupling.
+4. If the flake cannot be fixed immediately, use the project's documented quarantine, retry, or xfail mechanics with explicit reason and owner. Do not rerun until green or hide the instability behind weaker assertions.
+5. Report the limitation in the validation conclusion. A flaky green run is not strong proof.
 
 ## Assertion Changes
 
