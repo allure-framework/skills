@@ -24,7 +24,7 @@ Do not store the exact Allure version here. Version output is a runtime fact; th
 - Refresh capabilities with: `<wrapper> --version`, `<wrapper> agent --help`, and `<wrapper> agent capabilities --json`
 - Agent execution: `<supported / limited / unsupported / unknown>`
 - Output option: `<fill supported syntax or unknown>`
-- Human report mode: `<--report auto|off|awesome|config / unsupported / unknown>`
+- HTML report mode: `<--report auto|off|awesome|config / unsupported / unknown>`
 - Expectation controls: `<fill supported options, command goal controls, file format, or unknown>`
 - Latest/state directory recovery: `<supported / unsupported / unknown>`
 - Selection/rerun support: `<supported / unsupported / unknown>`
@@ -129,7 +129,7 @@ Treat the run goal as a claim boundary for review, not as proof. If the goal is 
 3. Choose report mode by audience: `--report off` for iterative agent-only loops, and `--report auto`, `awesome`, or `config` for final user-reviewable runs.
 4. Run only that scope through `allure agent`.
 5. Print the run's `index.md` path.
-6. For final runs with generated human reports, print the report path recorded in `manifest/human-report.json`.
+6. For final runs with generated HTML reports, read `manifest/human-report.json`, resolve the recorded report path against the agent output directory, and share it as `Here is the report: <link>`.
 7. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown.
 8. Inspect source code only after runtime evidence explains what executed.
 9. Call out weak scope, weak evidence, execution-signal limits, or partial runtime modeling.
@@ -145,7 +145,7 @@ Use this when a local command, CI, or another pipeline has already produced raw 
 5. Run the supported inspect command with fresh agent output.
 6. Print the inspected output's `index.md` path.
 7. Review `index.md`, manifests, findings, and relevant per-test markdown before raw logs, generated reports, or source code.
-8. If a human report is needed, check `manifest/human-report.json` before regenerating anything.
+8. If an HTML report is needed, check `manifest/human-report.json` before regenerating anything.
 9. Keep shard, matrix, retry, artifact-retention, and non-gating limits explicit.
 10. If inspect support or artifact shape is unavailable, try the generated agent-only config fallback with `allure generate --config <generated-config> --output <agent-output>` before dropping to raw Allure files, `allure log <allure-results>`, or logs.
 11. If only raw/log inspection is possible, state the weaker evidence path.
@@ -204,7 +204,7 @@ Allure results paths such as `<parent>/allure-results` are separate reporting co
 - Rerun from latest/prior output: `<supported command or unknown>`
 - Selection/test plan support: `<supported command/path or unknown>`
 - Inspect existing results/dumps: `<supported command/input syntax, unsupported, or unknown>`
-- Human report output: `<auto/off/awesome/config support, default threshold source, manifest path, intermediate/final mode convention, unsupported, or unknown>`
+- HTML report output: `<auto/off/awesome/config support, default threshold source, manifest path, intermediate/final mode convention, unsupported, or unknown>`
 - Generate-with-agent-plugin fallback: `<supported generated config, command syntax, and caller-managed output cleanup, unsupported, or unknown>`
 - Non-agent result inspection fallback: `<supported command/input syntax, unsupported, or unknown>`
 - Parallel-run rule: output paths and expectation state must not be shared
@@ -250,6 +250,6 @@ Accept a run only when:
 
 When raw local or CI Allure results or dumps are available and `allure agent inspect` support is confirmed, prefer inspected agent output over parsing raw logs or generated HTML reports.
 
-For final user-facing runs, include the generated human report path when `manifest/human-report.json` reports `generated`; otherwise state the manifest status if a report was expected.
+For final user-facing runs, include the generated report link when `manifest/human-report.json` reports `generated`; otherwise state the manifest status if a report was expected. Resolve relative manifest paths, such as `awesome/index.html`, against the agent output directory before presenting them. Call the artifact simply the report and do not wrap it in inline code or a code block; say `Here is the report: <link>` with a normal Markdown link to the absolute local report file so clients can make it clickable or previewable.
 
 Console-only conclusions are provisional when agent output is absent or incomplete.
