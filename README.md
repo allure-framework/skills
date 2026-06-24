@@ -32,7 +32,7 @@ Allure agent mode turns test execution into an evidence loop for agents and huma
 4. Allure preserves console output and produces agent-readable markdown, manifests, events, findings, and per-test evidence.
 5. The agent reviews runtime artifacts before source code, raw logs, or generated HTML reports.
 6. The agent fixes the product, test, fixture, metadata, or evidence quality based on the observed run.
-7. The final answer names what ran, what was checked, what evidence supports the conclusion, what remains uncertain, and the generated human report path when a final run produced one.
+7. The final answer names what ran, what was checked, what evidence supports the conclusion, what remains uncertain, and says `Here is the report: <link>` when a final run produced an HTML report.
 
 The skills keep this loop consistent across agents. The generated project guide keeps local commands and capabilities close to the repository. The Allure CLI remains the source of truth for version-specific flags, selectors, rerun support, state paths, and expectation controls.
 
@@ -84,7 +84,7 @@ The workflow configuration skill does not try to turn every repository into the 
 - use Allure agent mode for smoke checks, targeted validation, review, coverage analysis, and debugging
 - use consistent rules for output handling, capability discovery, artifact vocabulary, and runtime review order
 - rely on CLI-managed temporary agent output by default, and clean up caller-provided `--output` directories when they are no longer needed
-- turn human reports off for private iterative loops, then use `--report auto` or another supported mode for final review runs and share the generated report path
+- turn HTML reports off for private iterative loops, then use `--report auto` or another supported mode for final review runs and share the generated report as a clickable absolute link
 - inspect local or downloaded Allure results or dump artifacts through `allure agent inspect` when the local CLI supports it
 - create expectation controls only when they reduce a real risk
 - review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown before relying on source inspection alone
