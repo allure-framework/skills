@@ -9,16 +9,22 @@ Use this skill when a project wants to configure AI/coding-agent workflow guidan
 
 If the primary goal is to install framework adapters, make tests emit Allure results, add report scripts, or configure CI report publishing, use `allure-configure-reporting` instead.
 
-- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`. It preserves the original console logs and adds agent-mode artifacts without inheriting the normal report or export plugins from the project config.
-- Use `allure agent` for smoke checks too, even when the change is small or mechanical.
-- Only skip agent mode when it is impossible or when you are debugging agent mode itself.
-- After an `allure agent` run, read the agent output, not the console: open `index.md`, read the `manifest/*.jsonl` files, or use `allure agent query --latest`. Never pipe an agent run to `tail`, `grep`, or `head` to reach a conclusion. Doing so discards the printed agent-output directory path and reverts to raw-log parsing, which defeats the purpose of agent mode. Make this rule explicit in the routers and the generated project guide.
+This skill exists to make agents use Allure's reporting instead of inventing their own. Encode this law, compactly, as the lead of every router and of `docs/allure-agent-mode.md`:
+
+**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
+
+- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
+- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
+- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
+- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
+
+Lead the entry file with this exact law block, then route to the guide. The law is the one thing entry files may carry in full; keep the guide's reading lists, command details, and loops in `docs/allure-agent-mode.md`, not in the router.
 
 ## Goal
 
 Leave the project with:
 
-- root agent entry-file router guidance that points test work to `docs/allure-agent-mode.md`, present for every agent runtime used in the repo. These entry files are not interchangeable: Claude Code loads `CLAUDE.md` and does not read `AGENTS.md`, Codex reads `AGENTS.md`, and other tools read their own files. Do not leave any targeted runtime without a router.
+- root agent entry-file router guidance that points test work to `docs/allure-agent-mode.md`, present for every agent runtime used in the repo. These entry files are not interchangeable: Claude Code loads `CLAUDE.md` and does not read `AGENTS.md`, while most other agent tools (Codex, Cursor, and others) read the cross-tool `AGENTS.md`. Some tools read their own files. Do not leave any targeted runtime without a router.
 - a project `docs/allure-agent-mode.md` guide with local wrappers, capabilities, Allure integrations, test-design conventions, run profiles, expectation controls, local/CI existing-result or dump inspection support, human-report mode policy, output/state policy, execution-signal notes, metadata conventions, and evidence conventions
 - enough Allure bootstrap guidance for the agent to continue, even if the project is not fully configured yet
 
@@ -30,7 +36,7 @@ Leave the project with:
 4. Discover or document local test facts: test frameworks, wrappers, test roots, Allure integrations, Allure results paths, run profiles, supported selectors, expectation controls, output/state/rerun behavior, existing-result or dump inspection support, metadata conventions, evidence conventions, and CI/default-command execution signal when visible. Keep agent output, framework Allure results, dump artifacts, and generated reports distinct.
 5. Treat command flags, config keys, and environment variables as supported only after local evidence, installed help, official Allure/test-runner docs, or package README/source confirms them. If they cannot be confirmed, write `unknown` instead of guessing.
 6. If this skill is being used after `allure-configure-reporting` changed reporting configuration, refresh any stale local wrappers, test commands, Allure results paths, integrations, CI artifacts, run profiles, and evidence conventions in `docs/allure-agent-mode.md`.
-7. Create or update root agent entry files so test-related work points to `docs/allure-agent-mode.md`. Each agent runtime reads its own entry file and they are not interchangeable: Claude Code loads `CLAUDE.md` and does not read `AGENTS.md`, while Codex reads `AGENTS.md`. Honor existing project conventions first. When no entry file exists, create both `AGENTS.md` and `CLAUDE.md` so neither Codex nor Claude Code is left without the router; if the project wants a single source of truth, make `CLAUDE.md` a symlink to `AGENTS.md` or have it carry the same short snippet. When an entry file exists for one runtime but not another that works in the repo, add the missing one rather than assuming the existing file is shared. Keep the snippet easy to copy into other model-specific instruction files.
+7. Create or update root agent entry files so test-related work points to `docs/allure-agent-mode.md`. Each agent runtime reads its own entry file and they are not interchangeable: Claude Code loads `CLAUDE.md` and does not read `AGENTS.md`, while most other agent tools (Codex, Cursor, and others) read the cross-tool `AGENTS.md`. Honor existing project conventions first. When no entry file exists, create both `AGENTS.md` and `CLAUDE.md` so neither Claude Code nor the `AGENTS.md`-based tools are left without the router; if the project wants a single source of truth, make `CLAUDE.md` a symlink to `AGENTS.md` or have it carry the same short snippet. When an entry file exists for one runtime but not another that works in the repo, add the missing one rather than assuming the existing file is shared. Keep the snippet easy to copy into other model-specific instruction files.
 8. Create `docs/allure-agent-mode.md` from the bundled template and adapt only the parts that must be project-specific.
 9. Keep helper-command descriptions short and practical. Put exact commands and supported flags in the generated project guide only after confirming them in the local environment.
 10. Keep changes minimal and additive. Preserve unrelated project guidance in every entry file you touch.
@@ -42,7 +48,7 @@ Leave the project with:
 
 ## Guardrails
 
-- Keep agent entry files short. They should route, not duplicate the whole guide.
+- Keep agent entry files short: the compact law block plus routing pointers. They carry the law in full, but must not duplicate the guide's reading lists, command catalog, or loops.
 - Keep helper-command notes short. Prefer one-line descriptions over a growing command catalog.
 - Do not store exact Allure versions in generated project files. Do not add fields such as `Detected Allure CLI: 3.8.2` or `Allure version: ...`; store the wrapper, a capability snapshot timestamp or commit, and refresh commands instead.
 - Do not invent project-specific metadata conventions unless the repo already uses them.

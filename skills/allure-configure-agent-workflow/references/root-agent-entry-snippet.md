@@ -2,11 +2,11 @@
 
 Use [Allure Agent Mode](docs/allure-agent-mode.md) for all test-related work in this repository.
 
-- Read `docs/allure-agent-mode.md` before designing, writing, reviewing, validating, debugging, or enriching tests. Use the `$allure-agent-mode` skill as the durable behavior guide when it is installed; this project file contains local commands and conventions.
-- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`. It preserves the original console logs and adds agent-mode artifacts without inheriting the normal report or export plugins from the project config.
-- Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
-- Only skip agent mode when it is impossible or when you are debugging agent mode itself.
-- After an `allure agent` run, review the agent output: open `index.md`, read the `manifest/*.jsonl` files, or use `allure agent query --latest`. Do not pipe an agent run to `tail`, `grep`, or `head` and conclude from console output — that throws away the printed agent-output path and reverts to raw-log parsing.
-- If agent output is missing or incomplete, debug that first rather than silently falling back to console-only review.
-- Use Allure agent-mode when adding tests for features or fixes so expectations, evidence quality, and scope review are part of the loop.
+**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
+
+- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
+- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
+- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
+- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
+- Read `docs/allure-agent-mode.md` for local commands and conventions, and use the `$allure-agent-mode` skill as the durable behavior guide when it is installed.
 - Do not present ignored, excluded, swallowed, or non-gating tests as a passing validation signal.

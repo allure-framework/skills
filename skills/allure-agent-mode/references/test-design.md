@@ -58,7 +58,7 @@ Treat execution as part of test design. A good test that is excluded by default,
 - Keep tests boring and explicit. Prefer readable, stable, linear tests over conditional logic, loops, factories, or generated tests whose main value is saving a few repeated lines.
 - Do not hard-skip tests with runtime `if` branches, early returns, conditional registration, or helper aliases that hide the missing coverage from the runner and report.
 - New tests should prove behavior that matters, not merely execute code.
-- When practical, a new or changed regression test should fail for the intended bug before the fix and pass after the fix.
+- A new or changed regression test should fail for the intended bug before the fix and pass after the fix; if reproducing the pre-fix failure is genuinely impossible, state why and what alternative evidence proves the fix.
 - If expected behavior is unclear, report uncertainty instead of inventing a weaker expectation.
 - Use fixtures, factories, or controlled test data. Do not depend on production data, live customer records, or other uncontrolled external state.
 - Each test must be independently runnable. Do not rely on execution order, shared mutable state across tests, or leftovers from a previous test.

@@ -123,7 +123,7 @@ allure agent \
   --goal "verify checkout API evidence includes the HTTP exchange" \
   --expect-test "test/api/checkout.test.ts#checkout API creates order" \
   --expect-step-containing "response contains created order id" \
-  --expect-attachment content-type=application/vnd.allure.http \
+  --expect-attachment content-type=application/vnd.allure.http+json \
   -- npm test -- test/api/checkout.test.ts
 ```
 
@@ -139,6 +139,7 @@ Use rerun controls from local help, then add only the filters that are part of t
 allure agent \
   --goal "rerun checkout failures from the previous agent output" \
   --rerun-from /tmp/allure-agent-output-before \
+  --rerun-preset failed \
   --expect-label feature=checkout \
   -- npm test
 ```

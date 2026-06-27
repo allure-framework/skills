@@ -7,9 +7,12 @@ description: Write, review, debug, and improve tests with Allure agent mode by p
 
 Use this skill for feature or bug work that changes tests, for reviewing existing tests, auditing coverage, triaging failing suites, investigating weak evidence, or debugging flaky and environment-sensitive failures.
 
-- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`. It preserves the original console logs and adds agent-mode artifacts without inheriting the normal report or export plugins from the project config.
-- Use `allure agent` for smoke checks too, even when the change is small or mechanical.
-- Only skip agent mode when it is impossible or when you are debugging agent mode itself.
+**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
+
+- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
+- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
+- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
+- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
 
 ## Read First
 
@@ -32,7 +35,7 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 5. When investigating an execution that already emitted raw Allure results or dump artifacts, prefer a locally confirmed `allure agent inspect` flow to create agent-readable output from those artifacts before parsing raw logs or generated HTML reports.
 6. For iterative agent-only loops, prefer `--report off` when supported. For a final validation or user-facing review run, prefer `--report auto` or force the appropriate HTML report mode, then share the generated report link when one exists.
 7. Print the run or inspected output's `index.md` path so collaborators can open the overview quickly.
-8. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and the relevant test markdown files before inspecting source code.
+8. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, `manifest/expected.json` when the run used expectations, and the relevant test markdown files before inspecting source code.
 9. If evidence is weak, enrich the tests with real steps, attachments, or minimal metadata.
 10. Confirm the run is a trustworthy signal: the selected profile fits the goal, important tests are not silently excluded, and any non-gating local or CI signal is called out.
 11. Rerun with a fresh agent output directory and fresh expectations when expectation controls are still justified for the same intended scope. Use the CLI-provided temp output unless a specific path is needed.
@@ -45,7 +48,7 @@ Read `references/expectations.md` before creating or evaluating Allure agent exp
 1. Decide whether to use the CLI-provided temp output directory or an explicit `--output` path, and create the smallest meaningful expectations for the touched scope when justified.
 2. Run the touched scope with `allure agent`, even if the goal is only a smoke check after a mechanical change such as typing cleanup, mock refactors, or helper extraction.
 3. Print the run's `index.md` path from the output directory.
-4. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, and `manifest/findings.jsonl`.
+4. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and `manifest/expected.json` when the run used expectations.
 5. Only then make a final statement about regression safety or test correctness.
 
 ### Coverage Review Workflow
@@ -79,7 +82,7 @@ Before running, decide what should run, what should not run, why that scope is e
 - If neither `agent inspect` nor the generated agent-only config fallback is usable, inspect raw Allure results, dump contents, or logs only as a weaker fallback. `allure log <allure-results>` is a local console fallback for result folders when supported, but it is not agent output.
 - Agent-mode runs need unique output. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. In `allure@3.12.0` and newer, CLI-provided agent output is cleaned automatically by agent-mode lifecycle handling.
 - When using the default output location, get the generated directory from the agent output or a supported helper such as `allure agent latest` when available.
-- When choosing a specific output directory, prefer the supported `--output` option. Explicit output is caller-managed: remove or archive it yourself when it is no longer needed, because automatic agent cleanup does not remove caller-provided output paths. `ALLURE_AGENT_OUTPUT` may work as a fallback when the local CLI or wrapper documents it, but do not prefer it without a concrete reason.
+- When choosing a specific output directory, prefer the supported `--output` option. Explicit output is caller-managed: remove or archive it yourself when it is no longer needed, because automatic agent cleanup does not remove caller-provided output paths. Use an output-related environment variable only if the local CLI help, wrapper, or official docs explicitly document one; the supported control on the current CLI is `--output`.
 - Agent output, framework Allure results, and generated reports are separate artifacts. Do not use framework result settings such as `ALLURE_RESULTS_DIR` as agent-output controls.
 - Do not add or override framework result directories in an agent command unless the project guide, runner config, installed help, official docs, or adapter README/source confirms it is required for this run. When a per-run result directory is needed, keep its final path component `allure-results` and ensure it is discoverable by the local Allure command.
 - Never invent Allure environment variables from plausible names. If the exact variable or flag is not confirmed, use the documented `allure agent` option, leave the setting unknown, or ask to verify official docs.
@@ -95,7 +98,6 @@ Before running, decide what should run, what should not run, why that scope is e
 ## Guardrails
 
 - Runtime first, source second.
-- Never pipe an `allure agent` run to `tail`, `grep`, or `head` to reach a conclusion. The agent-mode signal is the agent output (`index.md`, `manifest/*.jsonl`, or `allure agent query --latest`), not the test console. Tailing or grepping the run discards the printed agent-output directory path and silently reverts to raw-log parsing, which defeats the wrapper.
 - Tests are behavior contracts; do not weaken assertions, skip tests, or delete coverage just to make the run pass.
 - Keep tests boring and explicit. Prefer readable, stable, linear tests over conditional logic, loops, factories, or generated tests whose main value is saving a few repeated lines.
 - Do not hard-skip tests with runtime `if` branches or helper aliases that hide coverage gaps; use runner-native skip, conditional-skip, or assumption mechanics with clear reasoning.

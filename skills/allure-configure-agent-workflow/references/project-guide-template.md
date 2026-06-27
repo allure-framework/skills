@@ -8,11 +8,12 @@ This file is project-specific guidance. Durable agent-mode, test-design, expecta
 
 Runtime first, source second.
 
-- If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`.
-- Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
-- Only skip agent mode when it is impossible or when debugging agent mode itself.
-- After an `allure agent` run, read the agent output, not the console: open `index.md`, read `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, or use `allure agent query --latest`. Never pipe an agent run to `tail`, `grep`, or `head` to reach a conclusion; that discards the printed agent-output directory path and reverts to raw-log parsing, which is exactly what agent mode replaces.
-- If agent output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
+**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
+
+- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
+- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
+- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
+- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
 
 ## Local Capability Snapshot
 
@@ -131,7 +132,7 @@ Treat the run goal as a claim boundary for review, not as proof. If the goal is 
 4. Run only that scope through `allure agent`.
 5. Print the run's `index.md` path.
 6. For final runs with generated HTML reports, read `manifest/human-report.json`, resolve the recorded report path against the agent output directory, and share it as `Here is the report: <link>`.
-7. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown.
+7. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, `manifest/expected.json` when the run used expectations, and relevant per-test markdown.
 8. Inspect source code only after runtime evidence explains what executed.
 9. Call out weak scope, weak evidence, execution-signal limits, or partial runtime modeling.
 
@@ -179,19 +180,28 @@ Use this when tests pass but are hard to review:
 4. Separate observed runtime coverage from inferred source-code coverage.
 5. Mark review incomplete until every scoped group was validated through matched expectations, reviewed observed scope, or documented as a broad package-health audit.
 
+### Failure Triage And Rerun Loop
+
+Use this when a run reports failed, broken, or flaky tests.
+
+1. Get the run output (`allure agent latest` when the run used the default temp directory) and read `index.md`, `manifest/findings.jsonl`, and the failing per-test markdown before touching source.
+2. When a runner-visible failure is missing from `manifest/tests.jsonl`, inspect `artifacts/global/` (for example `stderr`) and treat the run as a partial runtime review.
+3. Classify each failure before editing: product bug, stale test, wrong expectation, fixture/environment problem, or flake. Follow the test-design rules; do not weaken assertions or skip tests just to make the run pass.
+4. Rerun the narrowest scope through agent mode with fresh output, using the local rerun controls from the Capability Snapshot (such as `--rerun-latest` or `--rerun-from <dir>` with the failed preset) rather than rebuilding runner-specific test names by hand.
+5. Re-review the new output and keep shard, retry, flake, and non-gating limits explicit before calling the failure resolved.
+
 ## Runtime Artifact Review
 
 After each agent-mode run:
 
-- print the run's `index.md` path
-- read `manifest/run.json`
-- read `manifest/test-events.jsonl`
-- read `manifest/tests.jsonl`
-- read `manifest/findings.jsonl`
+- open the agent-output directory's `AGENTS.md` guide first; it carries the reading order, directory contract, and command map for that run
+- read `manifest/run.json` (the canonical run summary), then `manifest/test-events.jsonl`
+- read `index.md` for the triage overview, and print its path so collaborators can open it
+- read `manifest/tests.jsonl` and `manifest/findings.jsonl`
+- read `manifest/expected.json` when the run used expectations, to confirm the contracted scope resolved as intended
 - read relevant per-test markdown before inspecting source
 - inspect global stderr/log artifacts when runner-visible failures are not represented as logical tests
 - for inspected existing results or dumps, use generated agent output before generated reports or raw logs
-- never substitute a `tail`, `grep`, or `head` of the test console for the agent output; the console is not the agent-mode signal, and piping the run to it also hides the printed agent-output directory path
 
 ## Output, State, And Reruns
 
@@ -254,4 +264,4 @@ When raw local or CI Allure results or dumps are available and `allure agent ins
 
 For final user-facing runs, include the generated report link when `manifest/human-report.json` reports `generated`; otherwise state the manifest status if a report was expected. Resolve relative manifest paths, such as `awesome/index.html`, against the agent output directory before presenting them. Call the artifact simply the report and do not wrap it in inline code or a code block; say `Here is the report: <link>` with a normal Markdown link to the absolute local report file so clients can make it clickable or previewable.
 
-Console-only conclusions are provisional when agent output is absent or incomplete.
+If agent output is absent or incomplete, fix that first; do not silently accept console-only conclusions. Fall back to console only when agent mode is genuinely impossible, and then name the blocker and mark the conclusion provisional.

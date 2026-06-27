@@ -1,7 +1,7 @@
 interface:
   display_name: "Configure Allure Agent Workflow"
   short_description: "Add AI-agent workflow guidance for Allure test work"
-  default_prompt: "Use $allure-configure-agent-workflow to add Allure agent workflow guidance to this project."
+  default_prompt: "Use $allure-configure-agent-workflow to add Allure agent workflow guidance so test work runs through `allure agent` and conclusions come from the agent output, not console text."
 
 policy:
   allow_implicit_invocation: true
