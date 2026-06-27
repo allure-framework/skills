@@ -95,6 +95,7 @@ Before running, decide what should run, what should not run, why that scope is e
 ## Guardrails
 
 - Runtime first, source second.
+- Never pipe an `allure agent` run to `tail`, `grep`, or `head` to reach a conclusion. The agent-mode signal is the agent output (`index.md`, `manifest/*.jsonl`, or `allure agent query --latest`), not the test console. Tailing or grepping the run discards the printed agent-output directory path and silently reverts to raw-log parsing, which defeats the wrapper.
 - Tests are behavior contracts; do not weaken assertions, skip tests, or delete coverage just to make the run pass.
 - Keep tests boring and explicit. Prefer readable, stable, linear tests over conditional logic, loops, factories, or generated tests whose main value is saving a few repeated lines.
 - Do not hard-skip tests with runtime `if` branches or helper aliases that hide coverage gaps; use runner-native skip, conditional-skip, or assumption mechanics with clear reasoning.

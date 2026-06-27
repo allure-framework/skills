@@ -11,6 +11,7 @@ Runtime first, source second.
 - If a command executes tests and its result will be used for smoke checking, reasoning, review, coverage analysis, debugging, or any user-facing conclusion, run it through `allure agent`.
 - Use agent-mode execution for smoke checks too, even when the change is small or mechanical.
 - Only skip agent mode when it is impossible or when debugging agent mode itself.
+- After an `allure agent` run, read the agent output, not the console: open `index.md`, read `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, or use `allure agent query --latest`. Never pipe an agent run to `tail`, `grep`, or `head` to reach a conclusion; that discards the printed agent-output directory path and reverts to raw-log parsing, which is exactly what agent mode replaces.
 - If agent output is missing or incomplete, debug that first and treat console-only conclusions as provisional.
 
 ## Local Capability Snapshot
@@ -190,6 +191,7 @@ After each agent-mode run:
 - read relevant per-test markdown before inspecting source
 - inspect global stderr/log artifacts when runner-visible failures are not represented as logical tests
 - for inspected existing results or dumps, use generated agent output before generated reports or raw logs
+- never substitute a `tail`, `grep`, or `head` of the test console for the agent output; the console is not the agent-mode signal, and piping the run to it also hides the printed agent-output directory path
 
 ## Output, State, And Reruns
 
