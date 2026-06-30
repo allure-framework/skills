@@ -22,7 +22,7 @@ When Allure result emission works, there should be newly created or updated file
 
 Keep the result directory basename stable as `allure-results`. Vary the parent path, not the final name.
 
-This is the recommended convention even when an adapter supports a custom result path. It is also important for `allure run`: by default, `allure run` looks for directories named `allure-results` as a discovery gate so it does not process arbitrary files across the filesystem. If a project wants to use `allure run` with Allure results from a framework adapter, the result directory should be named `allure-results`.
+This is the recommended convention even when an adapter supports a custom result path. It also keeps results discoverable by the Allure commands that glob for them or take them positionally: `allure results pack` defaults to `./**/allure-results`, and `allure generate`/`allure open` accept `allure-results` directories as positional inputs. Naming the directory `allure-results` keeps those commands working without extra path arguments.
 
 Documented framework result settings, when supported by a specific adapter, control where that adapter writes raw results; they do not control `allure agent` output. Do not add plausible result-directory variables such as `ALLURE_RESULTS_DIR` to agent-mode commands unless the integration documents them or the project guide already requires them.
 

@@ -34,7 +34,7 @@ Avoid creating multiple overlapping names in the first pass.
 - Separate test execution from Allure report generation unless the user wants a combined convenience command.
 - For generated-config fallbacks, enable only the `agent` plugin and keep the config temporary unless the project already has a documented convention.
 - Preserve existing environment setup and wrappers.
-- Verify installed CLI flags before adding newer commands such as run wrappers, dump output, `agent inspect`, `--report` modes, or aggregation.
+- Verify installed CLI flags before adding newer commands such as run wrappers, dump output, `agent inspect`, `--report` modes (`auto|off|awesome|config`), or aggregation.
 
 ## Validation
 

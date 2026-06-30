@@ -9,16 +9,11 @@ Use this skill when a project wants to configure AI/coding-agent workflow guidan
 
 If the primary goal is to install framework adapters, make tests emit Allure results, add report scripts, or configure CI report publishing, use `allure-configure-reporting` instead.
 
-This skill exists to make agents use Allure's reporting instead of inventing their own. Encode this law, compactly, as the lead of every router and of `docs/allure-agent-mode.md`:
+This skill makes agents reach for Allure's reporting because it is useful — not to police them. Lead every router and `docs/allure-agent-mode.md` with the value frame; `references/root-agent-entry-snippet.md` carries the canonical wording (a test run is an instrument, not a pass/fail to scrape; running through `allure agent` yields a reviewable account of what happened plus automated findings about the tests themselves, anchored by a `--goal` so you, an upstream agent, or a human can validate it).
 
-**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
+Carry that frame plus the core loops (run-with-goal, expectations-as-evidence, failure-triage and rerun-just-the-failed, CI `inspect`, tests-as-debug-instrument), and read the agent output rather than scraping the console. Lead with why agent mode helps; keep detailed reading lists and command specifics in `docs/allure-agent-mode.md`, not the router. The console anti-pattern (`tail`/`grep`/`head`/`>/dev/null` of a run) belongs as a short footnote, not the headline.
 
-- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
-- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
-- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
-- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
-
-Lead the entry file with this exact law block, then route to the guide. The law is the one thing entry files may carry in full; keep the guide's reading lists, command details, and loops in `docs/allure-agent-mode.md`, not in the router.
+The router also carries an **authoring gate**: before writing or materially changing a test, the agent must invoke `$allure-agent-mode` and read its `test-design.md` reference. The router is the only guidance loaded every session, so it is the one place that catches test authoring mid-task (e.g. inside "implement phase 2"), long after any request-time skill match. State the gate imperatively; scope it to authoring and non-trivial changes, not every test-file touch. Because the gate cannot load a skill that is not installed, keep a compact set of core test-design non-negotiables inline in `docs/allure-agent-mode.md` as the floor.
 
 ## Goal
 
@@ -48,12 +43,13 @@ Leave the project with:
 
 ## Guardrails
 
-- Keep agent entry files short: the compact law block plus routing pointers. They carry the law in full, but must not duplicate the guide's reading lists, command catalog, or loops.
+- Keep agent entry files short: the compact value frame plus routing pointers. They carry the frame and the core loops, but must not duplicate the guide's detailed reading lists, command catalog, or per-loop steps.
 - Keep helper-command notes short. Prefer one-line descriptions over a growing command catalog.
 - Do not store exact Allure versions in generated project files. Do not add fields such as `Detected Allure CLI: 3.8.2` or `Allure version: ...`; store the wrapper, a capability snapshot timestamp or commit, and refresh commands instead.
 - Do not invent project-specific metadata conventions unless the repo already uses them.
 - Do not invent CI gating status, run profiles, selector support, Allure integration status, metadata conventions, evidence conventions, or expectation controls. Mark unknowns explicitly.
-- Do not create persistent agent output or expectation paths in the project guide. Modern `allure agent` creates and prints a temp output directory by default, and `allure@3.12.0` and newer clean CLI-provided agent output automatically through agent-mode lifecycle handling. Document explicit `--output` paths only when the project has a concrete convention, and state that caller-provided output must be removed or archived by the agent when no longer needed. Agent output is separate from stable Allure results paths such as `<parent>/allure-results`.
+- Do not create persistent agent output or expectation paths in the project guide. Modern `allure agent` creates and prints a temp output directory by default, and in `allure@3.12.0` and newer each run removes the previous run's CLI-provided temp output. Document explicit `--output` paths only when the project has a concrete convention, and state that the agent cleans only the `--output` path it provides. The framework's Allure results (such as `<parent>/allure-results`) are separate; clearing them between runs is unnecessary because agent mode detects only the current run's new results, so leave that to project preference.
 - Do not synthesize framework result-directory environment variables such as `ALLURE_RESULTS_DIR` in agent commands. Document them only when the local adapter, installed help, official docs, or package README/source confirms them, and keep the final directory name `allure-results` when the results must be discovered by Allure.
 - Do not claim `allure agent inspect` support for existing results or dump artifacts unless `allure agent capabilities --json` or local help confirms the command and the exact input/output syntax. Version output alone is not enough.
+- When generating `docs/allure-agent-mode.md`, keep its runtime-trust floors even when trimming for length: concurrent runs must each use their own caller-managed `--output` directory (the default temp output is unsafe for concurrency) and never share output or expectation state, expectation runs must use fresh expectations for the intended scope, and runner-visible failures not represented as logical tests require global-stderr inspection plus a partial-review note.
 - If the project already has better Allure instructions, merge carefully instead of overwriting them.
