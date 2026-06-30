@@ -276,7 +276,6 @@ Avoid:
 - descriptions that disagree with runtime evidence or assertions
 - names shared by nearby tests that cover different scenarios
 - names that claim coverage the assertions do not provide
-- descriptions, labels, links, parameters, or intent-defining step names hidden in centralized mappings instead of being visible near the assertions
 
 ## Setup And Data
 

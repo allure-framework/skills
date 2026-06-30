@@ -2,7 +2,7 @@
 
 This repository contains Allure Report skills.
 
-Start with `README.md` for the repository purpose, install examples, and release checklist.
+Start with `README.md` for the repository purpose and install examples.
 
 ## Validation
 

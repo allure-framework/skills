@@ -46,14 +46,13 @@ Think in surfaces. Start with the surface that matches the user's goal, but pref
 - Prefer the smallest additive change that fits the project.
 - Preserve existing test wrappers, reporters, package scripts, build tasks, and CI behavior when practical.
 - Use current official Allure and test-runner documentation when local evidence is incomplete or likely stale.
-- Keep configured Allure result paths named `allure-results`. Many adapters can write to arbitrary paths, but this skill guides projects toward `allure-results` as the stable final directory name. Choose the parent directory from the language, build system, runner, or project output convention. This also matters for `allure run`, whose default discovery looks for directories named `allure-results`.
+- Keep configured Allure result paths named `allure-results`. Many adapters can write to arbitrary paths, but this skill guides projects toward `allure-results` as the stable final directory name. Choose the parent directory from the language, build system, runner, or project output convention. The stable basename also keeps results discoverable by the Allure commands that glob for `allure-results` (such as `allure results pack`) or take it positionally (`allure generate`/`allure open`).
 
 ### Configure
 
 - Add or update framework adapter configuration before adding report generation unless the user explicitly asked for a different surface.
-- Keep result paths explicit when the project or integration supports it, using `allure-results` as the stable final directory name.
-- Prefer committed runner or build configuration files over environment variables for stable result paths. Use environment variables mainly for per-run overrides, secrets, CI wiring, or cases where the integration only supports environment configuration.
-- Do not invent environment variables from naming patterns, including plausible-looking names such as `ALLURE_RESULTS_DIR`. If local evidence and current docs do not confirm a variable, mark it unknown or use a documented configuration surface instead.
+- Keep result paths explicit and named `allure-results` (stable basename, varying parent), preferring committed runner or build configuration files over environment variables; use env vars mainly for per-run overrides, secrets, or CI wiring.
+- Do not invent environment variables from naming patterns, including plausible names such as `ALLURE_RESULTS_DIR`; confirm any variable against local evidence and docs, or mark it unknown. See the Result Directory Policy in `references/concepts.md` for the full rule.
 - Avoid replacing unrelated reporters or CI steps unless the existing setup requires it.
 - Avoid broad refactors, formatting churn, or new project structure while configuring Allure.
 

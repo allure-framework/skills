@@ -57,7 +57,7 @@ Start with the smallest falsifiable expectation:
    - `--expect-test "<fullName>"` for a known individual test
 3. Add `--expect-tests <count>` only when the exact count is stable and meaningful, such as one exact test review or an explicit zero-test absence check.
 4. Add `--forbid-label name=value` only when there is a known unwanted labeled scope that must not be part of the run.
-5. Add evidence expectations only when evidence quality is part of the task or required for debugging. Use step-name, step-count, attachment-count, or attachment-filter expectations only when each one protects a concrete review/debugging need.
+5. Add evidence expectations only when evidence quality is part of the task or required for debugging. Use step-name (`--expect-step-containing`), step-count (`--expect-steps`), attachment-count (`--expect-attachments`), or attachment-filter (`--expect-attachment`) expectations only when each one protects a concrete review/debugging need.
 
 Prefer one strong scope expectation over several weak ones. Do not combine labels, prefixes, counts, forbids, and evidence requirements unless each option protects against a different concrete risk.
 

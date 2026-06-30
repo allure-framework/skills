@@ -2,18 +2,13 @@
 
 Use Allure agent mode to design, review, validate, debug, and enrich tests in this project.
 
-This file is project-specific guidance. Durable agent-mode, test-design, expectation, and evidence rules live in the `allure-agent-mode` skill. If the skill is available, use it together with this file. If the skill is unavailable, follow this file as the local fallback and keep conclusions conservative.
+This file is project-specific guidance; the durable agent-mode, test-design, expectation, and evidence rules live in the `allure-agent-mode` skill. Before authoring or materially changing a test, invoke the `$allure-agent-mode` skill and read its `references/test-design.md` — do not author tests from general knowledge. If the skill is not installed, use this file plus the core non-negotiables below as the floor and keep conclusions conservative.
 
-## Review Principle
+## Why Agent Mode
 
-Runtime first, source second.
+A test run is an instrument, not a pass/fail to scrape. Running tests through `allure agent` turns them into a reviewable account of what actually happened — steps, HTTP/SQL/browser evidence, attachments — plus automated findings about the tests themselves (for example, a test that ran with no assertions). State what the run should confirm with `--goal`; the report carries the goal and the evidence, so you, an upstream agent, or a human can validate it. The console gives a status; the agent output gives understanding and a critique.
 
-**Non-negotiable: do test work through `allure agent`, and reach every conclusion from the agent output — not from console text or your own reporting.**
-
-- Run every test command whose result informs a conclusion through `allure agent` — smoke checks included, even for small or mechanical changes. It preserves the original console output and adds agent-mode artifacts without inheriting the project's normal report or export plugins, so there is no cost to routing through it. Skip only when agent mode is impossible or you are debugging agent mode itself.
-- After a run, open the output directory, read its `AGENTS.md` guide, and follow its reading order (`manifest/run.json` and the manifests, then `index.md`, then the per-test files). `allure agent` already did the analysis — read that structured output directly (use `allure agent query` to inspect it). Do not hand-roll a report from console or `allure agent query` text with `grep`/`tail`/`head`/counting, and never `>/dev/null` the run.
-- Weigh every signal, not just pass/fail: findings, weak or placeholder evidence, scope drift, broken vs failed, flaky and retried tests, global stderr, attachments. A green count is not a passing review.
-- If agent output is missing or incomplete, fix that first; never silently fall back to console-only conclusions.
+Reach for agent mode through the loops in [Core Loops](#core-loops): run with a goal, make evidence checkable with expectations, triage failures and rerun just the failed tests, inspect CI results without local repro, and use a test as a debugging instrument. The run prints a summary digest to stdout (counts, findings, report link); read it, then open the agent output for depth (start at the output dir's `AGENTS.md` guide). Run `allure agent capabilities` to confirm the local surface. Reducing the run with `tail`/`grep`/`head` or `>/dev/null`, or stopping at the counts, throws away the findings and evidence — the agent output is the signal.
 
 ## Local Capability Snapshot
 
@@ -56,7 +51,15 @@ Document only integrations detected or explicitly configured in this project.
 
 ## Project Test-Design Conventions
 
-Fill only conventions that exist in this project. Durable test-design rules stay in the `allure-agent-mode` skill.
+Fill only project-specific conventions below. The durable test-design rules live in the `$allure-agent-mode` skill's `references/test-design.md` — load that skill before authoring, as the top of this file directs.
+
+Core non-negotiables (the floor to follow when the skill is not loaded; full rules in the `$allure-agent-mode` skill's `references/test-design.md`):
+
+- A new or changed regression test must fail for the intended bug before the fix and pass after; if reproducing the pre-fix failure is genuinely impossible, state why and what alternative evidence proves the fix.
+- Do not weaken assertions, delete coverage, or skip, mute, or quarantine tests just to make a run pass; any such change needs explicit rationale.
+- Keep tests boring and explicit — prefer readable, linear tests over loops, factories, or conditionals whose only value is saving a few repeated lines.
+- Do not hide missing coverage behind runtime `if` branches, early returns, conditional test registration, or helper aliases; use the runner's explicit skip/xfail/quarantine with a stated reason.
+- Steps, attachments, parameters, and labels must reflect real behavior from the current run, not filler.
 
 - Accepted test layers: `<unit/component/integration/API/browser/CLI/etc. or unknown>`
 - Preferred assertion style: `<framework matchers, custom assertions, deep-match messages, or unknown>`
@@ -131,7 +134,7 @@ Treat the run goal as a claim boundary for review, not as proof. If the goal is 
 3. Choose report mode by audience: `--report off` for iterative agent-only loops, and `--report auto`, `awesome`, or `config` for final user-reviewable runs.
 4. Run only that scope through `allure agent`.
 5. Print the run's `index.md` path.
-6. For final runs with generated HTML reports, read `manifest/human-report.json`, resolve the recorded report path against the agent output directory, and share it as `Here is the report: <link>`.
+6. For final runs with a generated HTML report, share the report link (see the report-link rule under Acceptance Rules).
 7. Review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, `manifest/expected.json` when the run used expectations, and relevant per-test markdown.
 8. Inspect source code only after runtime evidence explains what executed.
 9. Call out weak scope, weak evidence, execution-signal limits, or partial runtime modeling.
@@ -205,7 +208,7 @@ After each agent-mode run:
 
 ## Output, State, And Reruns
 
-Do not create persistent agent output or expectation paths. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. In `allure@3.12.0` and newer, CLI-provided agent output is cleaned automatically by agent-mode lifecycle handling. Prefer `--output` for explicit paths only when the project needs them; caller-provided output must be removed or archived by the agent when it is no longer needed.
+Do not create persistent agent output or expectation paths. Modern `allure agent` creates and prints a temp output directory when no output is provided; use that default unless a specific path is needed. In `allure@3.12.0` and newer, each `allure agent` run removes the previous run's CLI-provided temp output automatically. Prefer `--output` for explicit paths only when the project needs them; an explicit `--output` path is the one thing the agent must clean up itself — remove or archive it when done. The framework's `allure-results` is separate; clearing it between runs is unnecessary (agent mode detects only the current run's new results), so leave that to project preference.
 
 Allure results paths such as `<parent>/allure-results` are separate reporting configuration and may be stable project paths. Do not use framework result variables such as `ALLURE_RESULTS_DIR` as agent-output controls; document them only when the local adapter requires them and the exact variable is confirmed, and keep the final directory name `allure-results` when the results must be discovered by Allure.
 
@@ -219,7 +222,7 @@ Allure results paths such as `<parent>/allure-results` are separate reporting co
 - HTML report output: `<auto/off/awesome/config support, default threshold source, manifest path, intermediate/final mode convention, unsupported, or unknown>`
 - Generate-with-agent-plugin fallback: `<supported generated config, command syntax, and caller-managed output cleanup, unsupported, or unknown>`
 - Non-agent result inspection fallback: `<supported command/input syntax, unsupported, or unknown>`
-- Parallel-run rule: output paths and expectation state must not be shared
+- Parallel-run rule: each concurrent run must pass its own caller-managed `--output` directory — the default temp output is unsafe for concurrency because each run clears the previous run's temp output — and output paths and expectation state must never be shared
 - CI artifact retention: `<raw Allure results, Allure dumps, agent output, logs, traces, none, or unknown>`
 
 ## Project Metadata Conventions

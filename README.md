@@ -83,11 +83,11 @@ The workflow configuration skill does not try to turn every repository into the 
 - avoid weakening assertions just to make a command pass
 - use Allure agent mode for smoke checks, targeted validation, review, coverage analysis, and debugging
 - use consistent rules for output handling, capability discovery, artifact vocabulary, and runtime review order
-- rely on CLI-managed temporary agent output by default, and clean up caller-provided `--output` directories when they are no longer needed
+- rely on CLI-managed temporary agent output by default, and clean up only caller-provided `--output` directories when they are no longer needed
 - turn HTML reports off for private iterative loops, then use `--report auto` or another supported mode for final review runs and share the generated report as a clickable absolute link
 - inspect local or downloaded Allure results or dump artifacts through `allure agent inspect` when the local CLI supports it
 - create expectation controls only when they reduce a real risk
-- review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown before relying on source inspection alone
+- open the agent-output directory's `AGENTS.md` guide, then review `index.md`, `manifest/run.json`, `manifest/test-events.jsonl`, `manifest/tests.jsonl`, `manifest/findings.jsonl`, and relevant per-test markdown before relying on source inspection alone
 - improve weak runtime evidence with useful steps, attachments, parameters, descriptions, and metadata
 - report limitations when tests are skipped, non-gating, broad, weakly evidenced, or only partially modeled
 

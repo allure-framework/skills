@@ -68,6 +68,27 @@ Use when tests already emit results and the project wants a local convenience co
 
 Adapt command names and flags to the installed Allure tool and existing package-script style.
 
+## Local Package Script: Inspect Existing Results As Agent Output
+
+Use when results already exist (locally or downloaded from CI) and you want the agent-readable review surface without rerunning tests. Confirm `allure agent inspect` support first with `allure agent capabilities --json`.
+
+```json
+{
+  "scripts": {
+    "allure:inspect": "<project-allure-command> agent inspect <output-parent>/allure-results",
+    "allure:inspect:dump": "<project-allure-command> agent inspect --dump <dump-archive>"
+  }
+}
+```
+
+When `agent inspect` cannot consume the artifact shape, fall back to a temporary agent-only Allure config:
+
+```bash
+<project-allure-command> generate --config <agent-only-config> --output <agent-output> <output-parent>/allure-results
+```
+
+Verify the exact CLI options against installed help before committing either script.
+
 ## HTTP Integration: Official Helper
 
 Use when the project wants HTTP exchanges represented in Allure results and an official Allure integration or project helper exists for the HTTP client.
