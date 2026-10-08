@@ -52,6 +52,15 @@ Ruby, PHP, Go, Rust, and other ecosystems:
 - Dart and Flutter integrations may use dedicated project config such as `allure-dart.yml`
 - official adapter docs and existing wrapper commands are especially important here
 
+## Optional Setup Helper
+
+`allure-kit` is a standalone CLI (npm package `allure-kit`, source at `https://github.com/todti/allure-kit`) that detects the test framework, installs the matching adapter, wires it into the runner config, and writes `allurerc` for JavaScript/TypeScript, Python, and Java (Gradle and Maven) projects. It is optional: consider it when a project has no Allure setup yet, the user accepts running `npx`, and the runner is one of its supported frameworks (see its README for the current list).
+
+- Start read-only: `npx allure-kit doctor --json` reports adapter, reporter wiring, version combinations that emit no results, unsupported `allurerc` fields, and results-directory mismatches.
+- Preview before changing: `npx allure-kit init --yes --dry-run`, then `npx allure-kit init --yes --json`. Confirm the exact flags with `npx allure-kit --help` or `<command> --help` first.
+- Treat its edits like any other change: review `git diff`, keep the results directory policy below, and validate that tests emit Allure results. It does not replace that validation.
+- If it reports that a config shape is unrecognized, it leaves the file untouched and prints the reason; apply the official adapter setup by hand.
+
 ## Configuration Principles
 
 - Add the framework adapter where the runner already accepts reporters, plugins, listeners, or test output options.

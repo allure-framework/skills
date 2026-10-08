@@ -87,7 +87,7 @@ Ask before proceeding when:
 Load only the reference files needed for the current surface:
 
 - Core model and result/report terminology: `references/concepts.md`
-- Test framework adapter selection and result emission: `references/test-frameworks.md`
+- Test framework adapter selection and result emission, including an optional setup helper CLI: `references/test-frameworks.md`
 - Allure CLI, package, plugin, or standalone tool choices: `references/tool-installation.md`
 - Package scripts, build tasks, Make targets, or wrapper commands: `references/build-system-commands.md`
 - Official/project integrations for matchers, HTTP capture, screenshots, traces, image diffs, labels, attachments, and related helpers: `references/additional-integrations.md`
